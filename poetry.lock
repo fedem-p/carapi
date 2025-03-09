@@ -849,6 +849,27 @@ files = [
 ]
 
 [[package]]
+name = "tqdm"
+version = "4.67.1"
+description = "Fast, Extensible Progress Meter"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "tqdm-4.67.1-py3-none-any.whl", hash = "sha256:26445eca388f82e72884e0d580d5464cd801a3ea01e63e5601bdff9ba6a48de2"},
+    {file = "tqdm-4.67.1.tar.gz", hash = "sha256:f8aef9c52c08c13a65f30ea34f4e5aac3fd1a34959879d7e59e63027286627f2"},
+]
+
+[package.dependencies]
+colorama = {version = "*", markers = "platform_system == \"Windows\""}
+
+[package.extras]
+dev = ["nbval", "pytest (>=6)", "pytest-asyncio (>=0.24)", "pytest-cov", "pytest-timeout"]
+discord = ["requests"]
+notebook = ["ipywidgets (>=6)"]
+slack = ["slack-sdk"]
+telegram = ["requests"]
+
+[[package]]
 name = "types-pytz"
 version = "2025.1.0.20250204"
 description = "Typing stubs for pytz"
@@ -872,6 +893,20 @@ files = [
 
 [package.dependencies]
 urllib3 = ">=2"
+
+[[package]]
+name = "types-tqdm"
+version = "4.67.0.20250301"
+description = "Typing stubs for tqdm"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "types_tqdm-4.67.0.20250301-py3-none-any.whl", hash = "sha256:8af97deb8e6874af833555dc1fe0fcd456b1a789470bf6cd8813d4e7ee4f6c5b"},
+    {file = "types_tqdm-4.67.0.20250301.tar.gz", hash = "sha256:5e89a38ad89b867823368eb97d9f90d2fc69806bb055dde62716a05da62b5e0d"},
+]
+
+[package.dependencies]
+types-requests = "*"
 
 [[package]]
 name = "typing-extensions"
@@ -915,4 +950,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "7075fb2ee659e6bea84c91888427f54610ccd53872e75e18fdc9db0dae010fa7"
+content-hash = "1b6747fa82d4b0e05212141cdc310f73cefe2905b725a15993edba14ef73914f"
