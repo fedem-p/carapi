@@ -12,13 +12,16 @@ def main():
 
     # Scrape data
     scraper = Scraper(config)
-    cars = scraper.scrape_data()
 
-    # (No separate processing step needed since filtering is done in the scraper)
+    for sort in ["standard", "price", "age"]:
+        print(f"================ Scraping with sorting: {sort} ================")
+        cars = scraper.scrape_data(sort_method=sort)
 
-    # Export data to CSV
-    exporter = Exporter(cars)
-    exporter.export_to_csv("filtered_cars.csv")
+        # (No separate processing step needed since filtering is done in the scraper)
+
+        # Export data to CSV
+        exporter = Exporter(cars)
+        exporter.export_to_csv(f"data/results/filtered_cars_{sort}.csv")
 
     # # (Later) Send email with the top cars
     # notifier = Notifier(config)
