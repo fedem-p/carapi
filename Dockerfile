@@ -21,8 +21,7 @@ RUN poetry install
 COPY . /app/
 
 # Make the linting script executable
-RUN chmod +x /app/lint.sh
-RUN chmod +x /app/test.sh
+RUN chmod +x /app/lint.sh /app/test.sh
 
 # Command to run the scraper (this can be adjusted later)
 CMD ["python", "src/start.py"]
