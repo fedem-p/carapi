@@ -19,3 +19,16 @@ run tests:
 ```sh
 docker run --rm -v $(pwd):/app autoscout_scraper bash ./test.sh
 ```
+
+run app:
+
+```sh
+docker compose build && docker compose up
+```
+
+
+update make and models:
+
+```sh
+docker run --rm -v $(pwd):/app autoscout_scraper bash ./update_make_models.sh
+```
