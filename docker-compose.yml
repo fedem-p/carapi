@@ -5,6 +5,6 @@ services:
       dockerfile: Dockerfile
     volumes:
       - .:/app  # Mount the current directory to /app in the container
-    command: ["python", "src/start.py"]  # Default command to run the scraper
+    command: ["poetry", "run", "python", "-m", "src.main"]  # Default command to run the scraper
     environment:
       - PYTHONUNBUFFERED=1  # Optional: Set environment variables if needed
