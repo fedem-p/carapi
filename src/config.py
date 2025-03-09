@@ -36,4 +36,4 @@ class Config:
             "recipient": "recipient@example.com",
         }
     )
-    num_cars: int = 20  # Default number of pages to scrape
+    num_pages: int = 2  # Default number of pages to scrape

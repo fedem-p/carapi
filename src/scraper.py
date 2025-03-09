@@ -1,5 +1,6 @@
 """Scraper module for fetching car data from Autoscout24."""
 
+from datetime import datetime
 import logging
 import random
 import time
@@ -84,6 +85,8 @@ class Scraper:
             logger.debug(
                 "Waiting for %.2f seconds before the next request...", wait_time
             )
+            # print to display progress bar though the docker logs
+            logger.info(".")
             time.sleep(wait_time)
 
         return all_cars
@@ -182,10 +185,6 @@ class Scraper:
                     else None
                 )
 
-                # Extract the image URL (480p JPEG)
-                image_tag = car.find("img", class_="NewGallery_img__cXZQC")
-                image_url = image_tag["src"] if image_tag else None
-
                 if car_make in EXCLUDED_CARS:
                     if car_model in EXCLUDED_CARS[car_make]:
                         logger.debug("skipped %s | %s", car_make, car_model)
@@ -202,7 +201,7 @@ class Scraper:
                             "year": car_year,
                             "price": car_price,
                             "mileage": car_km,
-                            "image_url": image_url,
+                            "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         }
                     )
                     car_list.append(car_data)
@@ -214,7 +213,7 @@ class Scraper:
                         car_km,
                     )
 
-            except (AttributeError, ValueError, IndexError) as e:
+            except (AttributeError, ValueError, IndexError, ScraperException) as e:
                 logger.error(f"Error extracting data for a car: {e}")
 
         return car_list
@@ -335,6 +334,27 @@ class Scraper:
                                     if "Adaptive Cruise Control" in item.text:
                                         adaptive_cruise_control = True
 
+            image_gallery_div = soup.find('div', class_='image-gallery-slides')
+
+            # Initialize variables to track the highest resolution JPG link
+            highest_resolution_jpg = None
+            # highest_resolution = 0
+
+            # Check if the div was found
+            if image_gallery_div:
+                # Find all <source> tags within the specified <div>
+                sources = image_gallery_div.find_all('source')
+
+                # Loop through each <source> tag
+                for source in sources:
+                    # Get the srcset attribute
+                    srcset = source.get('srcset')
+                    # Check if the type is 'image/jpeg'
+                    if source.get('type') == 'image/jpeg':
+                        # Extract the resolution from the srcset URL
+                        highest_resolution_jpg = srcset
+
+            # print(highest_resolution_jpg)
             # Create a dictionary for the additional car details
             additional_details = {
                 "body_type": body_type if "body_type" in locals() else None,
@@ -385,10 +405,10 @@ class Scraper:
                     else False
                 ),
                 "seat_heating": seat_heating if "seat_heating" in locals() else False,
+                "img_url": highest_resolution_jpg
             }
 
             return additional_details
 
         except requests.exceptions.RequestException as e:
-            logger.error(f"Error fetching details from {url}: {e}")
-            return None
+            raise ScraperException(f"Error fetching details from {url}: {e}") from e
