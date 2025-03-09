@@ -1,8 +1,8 @@
 """Getting started."""
 
-from config import Config
-from scraper import Scraper
-from exporter import Exporter
+from .config import Config
+from .scraper import Scraper
+from .exporter import Exporter
 
 
 # main.py
