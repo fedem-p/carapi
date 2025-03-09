@@ -12,6 +12,8 @@ python = "^3.10"
 pandas = "^2.2.3"
 beautifulsoup4 = "^4.13.3"
 requests = "^2.26.0"
+pandas-stubs = "^2.2.3.250308"
+types-requests = "^2.32.0.20250306"
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"
