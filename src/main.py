@@ -3,6 +3,7 @@
 from .config import Config
 from .scraper import Scraper
 from .exporter import Exporter
+from .auto_score import AutoScore
 
 
 # main.py
@@ -22,6 +23,12 @@ def main():
         # Export data to CSV
         exporter = Exporter(cars)
         exporter.export_to_csv(f"data/results/filtered_cars_{sort}.csv")
+
+
+    ## Analyse data
+    autoscorer = AutoScore('data/results')
+    ranked_cars = autoscorer.rank_cars(n = 20)
+    print(ranked_cars[['make', 'model', 'price', 'mileage', 'year', 'score', 'grade', 'url']].to_string())
 
     # # (Later) Send email with the top cars
     # notifier = Notifier(config)
