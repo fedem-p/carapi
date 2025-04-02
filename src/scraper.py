@@ -27,8 +27,7 @@ EXCLUDED_CARS = {
     "citroen": ["c3"],
     "kia": ["rio"],
     "dacia": ["logan"],
-    "seat": ["ibiza"]
-
+    "seat": ["ibiza"],
 }
 
 
@@ -47,7 +46,7 @@ class Scraper:
         """
         self.config = config
 
-    def scrape_data(self, sort_method= "standard"):
+    def scrape_data(self, sort_method="standard"):
         """Scrape car data from the configured URL for the specified number of pages.
 
         Raises:
@@ -201,7 +200,7 @@ class Scraper:
                             "year": car_year,
                             "price": car_price,
                             "mileage": car_km,
-                            "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                            "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                         }
                     )
                     car_list.append(car_data)
@@ -225,188 +224,104 @@ class Scraper:
             response.raise_for_status()
             soup = BeautifulSoup(response.text, "html.parser")
 
-            # Extract additional details from the Basic Data section
-            basic_data_section = soup.find("section", id="basic-details-section")
-            if basic_data_section:
-                details = basic_data_section.find_all(
-                    "dl", class_="DataGrid_defaultDlStyle__xlLi_"
-                )
-                if details:
-                    for detail in details:
-                        for dt, dd in zip(detail.find_all("dt"), detail.find_all("dd")):
-                            if dt.text.strip() == "Body type":
-                                body_type = dd.text.strip()
-                            elif dt.text.strip() == "Type":
-                                car_type = dd.text.strip()
-                            elif dt.text.strip() == "Seats":
-                                seats = int(dd.text.strip())
-                            elif dt.text.strip() == "Doors":
-                                doors = int(dd.text.strip())
-                            elif dt.text.strip() == "Country version":
-                                country_version = dd.text.strip()
-                            elif dt.text.strip() == "Offer number":
-                                offer_number = dd.text.strip()
-                            elif dt.text.strip() == "Warranty":
-                                warranty = dd.text.strip()
+            # Initialize variables
+            details_mapping = {
+                "Body type": "body_type",
+                "Type": "car_type",
+                "Seats": "seats",
+                "Doors": "doors",
+                "Country version": "country_version",
+                "Offer number": "offer_number",
+                "Warranty": "warranty",
+                "Mileage": "vehicle_mileage",
+                "First registration": "first_registration",
+                "General inspection": "general_inspection",
+                "Previous owner": "previous_owner",
+                "Full service history": "full_service_history",
+                "Non-smoker vehicle": "non_smoker_vehicle",
+                "Power": "power",
+                "Gearbox": "gearbox",
+                "Engine size": "engine_size",
+                "Emission class": "emission_class",
+                "Emissions sticker": "emission_sticker",
+                "Fuel type": "fuel_type",
+            }
 
-            # Extract additional details from the Vehicle History section
-            history_section = soup.find("section", id="listing-history-section")
-            if history_section:
-                history_details = history_section.find_all(
-                    "dl", class_="DataGrid_defaultDlStyle__xlLi_"
-                )
-                if history_details:
-                    for detail in history_details:
-                        for dt, dd in zip(detail.find_all("dt"), detail.find_all("dd")):
-                            if dt.text.strip() == "Mileage":
-                                vehicle_mileage = int(
-                                    dd.text.strip()
-                                    .replace(" km", "")
-                                    .replace(",", "")
-                                    .strip()
-                                )
-                            elif dt.text.strip() == "First registration":
-                                first_registration = dd.text.strip()
-                            elif dt.text.strip() == "General inspection":
-                                general_inspection = dd.text.strip()
-                            elif dt.text.strip() == "Previous owner":
-                                previous_owner = int(dd.text.strip())
-                            elif dt.text.strip() == "Full service history":
-                                full_service_history = dd.text.strip()
-                            elif dt.text.strip() == "Non-smoker vehicle":
-                                non_smoker_vehicle = dd.text.strip()
+            # Initialize additional details dictionary
+            additional_details = {key: None for key in details_mapping.values()}
+            additional_details.update(
+                {
+                    "android_auto": False,
+                    "car_play": False,
+                    "cruise_control": False,
+                    "adaptive_cruise_control": False,
+                    "seat_heating": False,
+                    "img_url": None,
+                }
+            )
 
-            # Extract additional details from the Technical Data section
-            technical_section = soup.find("section", id="technical-details-section")
-            if technical_section:
-                technical_details = technical_section.find_all(
-                    "dl", class_="DataGrid_defaultDlStyle__xlLi_"
-                )
-                if technical_details:
-                    for detail in technical_details:
+            # Function to extract details from a section
+            def extract_details(section_id):
+                section = soup.find("section", id=section_id)
+                if section:
+                    for detail in section.find_all(
+                        "dl", class_="DataGrid_defaultDlStyle__xlLi_"
+                    ):
                         for dt, dd in zip(detail.find_all("dt"), detail.find_all("dd")):
-                            if dt.text.strip() == "Power":
-                                power = dd.text.strip()
-                            elif dt.text.strip() == "Gearbox":
-                                gearbox = dd.text.strip()
-                            elif dt.text.strip() == "Engine size":
-                                engine_size = dd.text.strip()
+                            key = dt.text.strip()
+                            if key in details_mapping:
+                                if key in ["Seats", "Doors", "Previous owner"]:
+                                    additional_details[details_mapping[key]] = int(
+                                        dd.text.strip()
+                                    )
+                                elif key == "Mileage":
+                                    additional_details["vehicle_mileage"] = int(
+                                        dd.text.strip()
+                                        .replace(" km", "")
+                                        .replace(",", "")
+                                        .strip()
+                                    )
+                                else:
+                                    additional_details[details_mapping[key]] = (
+                                        dd.text.strip()
+                                    )
 
-            # Extract additional details from the Environmental Data section
-            environment_section = soup.find("section", id="environment-details-section")
-            if environment_section:
-                environment_details = environment_section.find_all(
-                    "dl", class_="DataGrid_defaultDlStyle__xlLi_"
-                )
-                if environment_details:
-                    for detail in environment_details:
-                        for dt, dd in zip(detail.find_all("dt"), detail.find_all("dd")):
-                            if dt.text.strip() == "Emission class":
-                                emission_class = dd.text.strip()
-                            elif dt.text.strip() == "Emissions sticker":
-                                emissions_sticker = dd.text.strip()
-                            elif dt.text.strip() == "Fuel type":
-                                fuel_type = dd.text.strip()
+            # Extract details from all relevant sections
+            extract_details("basic-details-section")
+            extract_details("listing-history-section")
+            extract_details("technical-details-section")
+            extract_details("environment-details-section")
 
-            # Extract additional details from the Equipment section
+            # Extract equipment details
             equipment_section = soup.find("section", id="equipment-section")
             if equipment_section:
-                equipment_details = equipment_section.find_all(
+                for detail in equipment_section.find_all(
                     "dl", class_="DataGrid_defaultDlStyle__xlLi_"
-                )
-                if equipment_details:
-                    for detail in equipment_details:
-                        for dt, dd in zip(detail.find_all("dt"), detail.find_all("dd")):
-                            if dt.text.strip() == "Comfort & Convenience":
-                                equipment_items = dd.find_all("li")
-                                for item in equipment_items:
-                                    if "Android Auto" in item.text:
-                                        android_auto = True
-                                    if "Apple CarPlay" in item.text:
-                                        car_play = True
-                                    if "Seat heating" in item.text:
-                                        seat_heating = True
-                            elif dt.text.strip() == "Safety & Security":
-                                equipment_items = dd.find_all("li")
-                                for item in equipment_items:
-                                    if "Cruise Control" in item.text:
-                                        cruise_control = True
-                                    if "Adaptive Cruise Control" in item.text:
-                                        adaptive_cruise_control = True
+                ):
+                    for dt, dd in zip(detail.find_all("dt"), detail.find_all("dd")):
+                        if dt.text.strip() == "Comfort & Convenience":
+                            for item in dd.find_all("li"):
+                                if "Android Auto" in item.text:
+                                    additional_details["android_auto"] = True
+                                if "Apple CarPlay" in item.text:
+                                    additional_details["car_play"] = True
+                                if "Seat heating" in item.text:
+                                    additional_details["seat_heating"] = True
+                        elif dt.text.strip() == "Safety & Security":
+                            for item in dd.find_all("li"):
+                                if "Cruise Control" in item.text:
+                                    additional_details["cruise_control"] = True
+                                if "Adaptive Cruise Control" in item.text:
+                                    additional_details["adaptive_cruise_control"] = True
 
-            image_gallery_div = soup.find('div', class_='image-gallery-slides')
-
-            # Initialize variables to track the highest resolution JPG link
-            highest_resolution_jpg = None
-            # highest_resolution = 0
-
-            # Check if the div was found
+            # Extract image URL
+            image_gallery_div = soup.find("div", class_="image-gallery-slides")
             if image_gallery_div:
-                # Find all <source> tags within the specified <div>
-                sources = image_gallery_div.find_all('source')
-
-                # Loop through each <source> tag
+                sources = image_gallery_div.find_all("source")
                 for source in sources:
-                    # Get the srcset attribute
-                    srcset = source.get('srcset')
-                    # Check if the type is 'image/jpeg'
-                    if source.get('type') == 'image/jpeg':
-                        # Extract the resolution from the srcset URL
-                        highest_resolution_jpg = srcset
-
-            # print(highest_resolution_jpg)
-            # Create a dictionary for the additional car details
-            additional_details = {
-                "body_type": body_type if "body_type" in locals() else None,
-                "car_type": car_type if "car_type" in locals() else None,
-                "seats": seats if "seats" in locals() else None,
-                "doors": doors if "doors" in locals() else None,
-                "country_version": (
-                    country_version if "country_version" in locals() else None
-                ),
-                "offer_number": offer_number if "offer_number" in locals() else None,
-                "warranty": warranty if "warranty" in locals() else None,
-                "vehicle_mileage": (
-                    vehicle_mileage if "vehicle_mileage" in locals() else None
-                ),
-                "first_registration": (
-                    first_registration if "first_registration" in locals() else None
-                ),
-                "general_inspection": (
-                    general_inspection if "general_inspection" in locals() else None
-                ),
-                "previous_owner": (
-                    previous_owner if "previous_owner" in locals() else None
-                ),
-                "full_service_history": (
-                    full_service_history if "full_service_history" in locals() else None
-                ),
-                "non_smoker_vehicle": (
-                    non_smoker_vehicle if "non_smoker_vehicle" in locals() else None
-                ),
-                "power": power if "power" in locals() else None,
-                "engine_size": engine_size if "engine_size" in locals() else None,
-                "emission_class": (
-                    emission_class if "emission_class" in locals() else None
-                ),
-                "emission_sticker": (
-                    emissions_sticker if "emissions_sticker" in locals() else None
-                ),
-                "fuel": fuel_type if "fuel_type" in locals() else None,
-                "transmission": gearbox if "gearbox" in locals() else None,
-                "android_auto": android_auto if "android_auto" in locals() else False,
-                "car_play": car_play if "car_play" in locals() else False,
-                "cruise_control": (
-                    cruise_control if "cruise_control" in locals() else False
-                ),
-                "adaptive_cruise_control": (
-                    adaptive_cruise_control
-                    if "adaptive_cruise_control" in locals()
-                    else False
-                ),
-                "seat_heating": seat_heating if "seat_heating" in locals() else False,
-                "img_url": highest_resolution_jpg
-            }
+                    if source.get("type") == "image/jpeg":
+                        additional_details["img_url"] = source.get("srcset")
+                        break  # Stop after finding the first JPEG
 
             return additional_details
 
