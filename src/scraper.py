@@ -14,19 +14,19 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 EXCLUDED_CARS = {
-    "volkswagen": ["caddy"],
-    "opel": ["astra", "corsa", "grandland x", "grandland", "crossland x", "crossland"],
-    "ford": ["puma"],
-    "skoda": ["scala"],
-    "hyundai": ["kona", "i20"],
+    "volkswagen": ["caddy", "taigo"],
+    "opel": ["astra", "corsa", "grandland x", "grandland", "crossland x", "crossland", "mokka"],
+    "ford": ["puma", "fiesta"],
+    "skoda": ["scala", "fabia"],
+    "hyundai": ["kona", "i20", "nexo"],
     "toyota": ["c-hr"],
     "bmw": ["118"],
-    "peugeot": ["208"],
-    "nissan": ["micra"],
+    "peugeot": ["208", "308"],
+    "nissan": ["micra", "juke"],
     "renault": ["zoe"],
     "citroen": ["c3"],
     "kia": ["rio"],
-    "dacia": ["logan"],
+    "dacia": ["logan", "sandero"],
     "seat": ["ibiza"],
 }
 
