@@ -3,8 +3,7 @@ import os
 
 # Define weight for each attribute
 WEIGHTS = {
-    "make_model": 4,
-    "price": 4,
+    "price": 4.5,
     "mileage": 3,
     "fuel_type": 3,
     "features": 3,
@@ -18,6 +17,7 @@ WEIGHTS = {
     "seat_heating": 2
 }
 
+# Fuel type scores
 FUEL_SCORES = {
     "Electric/Diesel": 1.0,
     "Electric/Gasoline": 0.9,
@@ -27,6 +27,7 @@ FUEL_SCORES = {
     "Regular/Benzine 91": 0.7
 }
 
+# Favorite make-model combinations for additional scoring
 FAVORITE_MODELS = [
     ('skoda', 'superb'),
     ('skoda', 'octavia'),
@@ -49,8 +50,6 @@ FAVORITE_MODELS = [
     ('volkswagen', 'arteon'),
     ('volkswagen', 'tiguan'),
     ('volkswagen', 'golf gti')
-    
-    # Add more favorite make-model combinations as needed
 ]
 
 class AutoScore:
@@ -59,13 +58,14 @@ class AutoScore:
         csv_files = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('.csv')]
         self.data = pd.concat([pd.read_csv(f) for f in csv_files], ignore_index=True)
         self.data.drop_duplicates(subset=['url'], inplace=True)
+        self.data.fillna('', inplace=True)  # Handle missing values by replacing with an empty string
         self._calculate_ranges()
     
     def _calculate_ranges(self):
         """Determine min/max values for normalization"""
         self.price_min, self.price_max = self.data['price'].min(), self.data['price'].max()
         self.mileage_min, self.mileage_max = self.data['mileage'].min(), self.data['mileage'].max()
-        self.power_min, self.power_max = self.data['power'].apply(lambda x: int(str(x).split()[0])).min(), self.data['power'].apply(lambda x: int(str(x).split()[0])).max()
+        self.power_min, self.power_max = self.data['power'].apply(lambda x: int(str(x).split()[0]) if str(x).split()[0].isdigit() else 0).min(), self.data['power'].apply(lambda x: int(str(x).split()[0]) if str(x).split()[0].isdigit() else 0).max()
         self.year_min, self.year_max = self.data['year'].min(), self.data['year'].max()
     
     def normalize(self, value, min_val, max_val):
@@ -94,18 +94,19 @@ class AutoScore:
         if car['adaptive_cruise_control']:
             score += WEIGHTS['adaptive_cruise']
 
+        # Seat Heating
         if car['seat_heating']:
             score += WEIGHTS['seat_heating']
         
         # Power (normalized)
-        power_hp = int(car['power'].split()[0])
+        power_hp = int(car['power'].split()[0]) if car['power'] and car['power'].split()[0].isdigit() else 0
         score += WEIGHTS['power'] * self.normalize(power_hp, self.power_min, self.power_max)
         
         # Registration Year (normalized)
         score += WEIGHTS['registration_year'] * self.normalize(int(car['year']), self.year_min, self.year_max)
         
         # Body Type
-        if car['body_type'].lower() in ['Station wagon', 'Off-Road/Pick-up', 'Sedan']:
+        if car['body_type'].lower() in ['station wagon', 'off-road/pick-up', 'sedan']:
             score += WEIGHTS['body_type']
         
         # Emissions
@@ -114,34 +115,60 @@ class AutoScore:
         elif '5' in car['emission_class'].lower():
             score += WEIGHTS['emissions'] * 0.8
         
-        # Coolness Factor (Special Bonus for Selected Models)
+        # Coolness Factor
         if (car['make'].lower(), car['model'].lower()) in FAVORITE_MODELS or (car['make'].lower() in [make for make, _ in FAVORITE_MODELS] and car['model'].lower() == 'x'):
             score += WEIGHTS['coolness_factor']
-
-        # Adaptive Cruise Control
+        
+        # Warranty Bonus
         if "no" not in car['warranty'].lower():
             score += WEIGHTS['warranty']
         
-        if car["previous_owner"] == 1:
-            score += car["previous_owner"]
-        if car["previous_owner"] == 2:
-            score += car["previous_owner"]*0.75
-
-        if "no" in car["full_service_history"].lower():
-            score -= 2
+        # Previous Owners
+        if car['previous_owner'] == 1:
+            score += car['previous_owner']
+        elif car['previous_owner'] == 2:
+            score += car['previous_owner'] * 0.75
         
-        if "no" in car["non_smoker_vehicle"].lower():
+        # Service & Non-Smoker History Penalty
+        if "no" in car['full_service_history'].lower():
+            score -= 2
+        if "no" in car['non_smoker_vehicle'].lower():
             score -= 1
 
         return score
     
-    def rank_cars(self):
-        """Score and rank all cars in the dataset"""
+    def assign_grade(self, score):
+        """Assign a grade based on the car's score."""
+        if score > 28:
+            return "Outstanding"  # New category for top-tier cars
+        elif 24 < score <= 28:
+            return "Excellent"
+        elif 19 < score <= 24:
+            return "Good"
+        elif 14 < score <= 19:
+            return "Decent"
+        elif 9 < score <= 14:
+            return "Not Good"
+        else:
+            return "Bad"
+    
+    def rank_cars(self, n=10):
+        """Score and rank cars, ensuring unique make-model combinations first and adding a grade column."""
         self.data['score'] = self.data.apply(self.score_car, axis=1)
-        return self.data.sort_values(by='score', ascending=False)
+        
+        # Apply the grade function
+        self.data['grade'] = self.data['score'].apply(self.assign_grade)
 
-# Example Usage
-# autoscorer = AutoScore('path/to/csv/folder')
-# ranked_cars = autoscorer.rank_cars()
-# print(ranked_cars[['make', 'model', 'score']].head(10))
+        # Sort cars by score
+        sorted_data = self.data.sort_values(by='score', ascending=False)
 
+        # Get unique make-model combinations first
+        unique_cars = sorted_data.drop_duplicates(subset=['make', 'model'])
+        if len(unique_cars) >= n:
+            return unique_cars.head(n)
+
+        # Fill remaining spots with duplicates if necessary
+        remaining_cars = sorted_data[~sorted_data.index.isin(unique_cars.index)]
+        final_selection = pd.concat([unique_cars, remaining_cars.head(n - len(unique_cars))])
+
+        return final_selection
