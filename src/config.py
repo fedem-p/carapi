@@ -23,6 +23,7 @@ class Config:
             "min_power": "74",
             "max_price": "20000",
             "min_seats": "4",
+            "fuel": ["2", "3", "B", "D"],
             "sort": "standard",
             "brands": FILTER_MAKES,
         }
