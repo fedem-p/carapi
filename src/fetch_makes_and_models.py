@@ -2,49 +2,7 @@
 
 import csv
 import requests
-
-# Constants
-CSV_FILE_PATH = "data/makes_and_models.csv"
-FILTER_MAKES = [
-    "Volkswagen",
-    "Mazda",
-    "MG",
-    "Tesla",
-    "Land Rover",
-    "Peugeot",
-    "Fiat",
-    "Citroen",
-    "Chevrolet",
-    "SEAT",
-    "Daihatsu",
-    "Porsche",
-    "Jaguar",
-    "Dacia",
-    "Opel",
-    "Volvo",
-    "Ford",
-    "Alfa Romeo",
-    "Lotus",
-    "Jeep",
-    "Suzuki",
-    "Hyundai",
-    "Maserati",
-    "Toyota",
-    "BMW",
-    "Renault",
-    "Nissan",
-    "Skoda",
-    "MINI",
-    "Kia",
-    "Audi",
-    "CUPRA",
-    "Subaru",
-    "Lancia",
-    "Polestar",
-    "Mercedes-Benz",
-    "Mitsubishi",
-    "Lexus",
-]  # Add makes to include here
+from .constants import CSV_FILE_PATH, FILTER_MAKES
 
 
 def fetch_makes_and_models():

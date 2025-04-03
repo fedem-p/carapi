@@ -1,56 +1,6 @@
 import pandas as pd
 import os
-
-# Define weight for each attribute
-WEIGHTS = {
-    "price": 4.5,
-    "mileage": 3,
-    "fuel_type": 3,
-    "features": 3,
-    "adaptive_cruise": 2,
-    "power": 1,
-    "registration_year": 3,
-    "body_type": 2,
-    "emissions": 3,
-    "coolness_factor": 2,
-    "warranty": 3,
-    "seat_heating": 2
-}
-
-# Fuel type scores
-FUEL_SCORES = {
-    "Electric/Diesel": 1.0,
-    "Electric/Gasoline": 0.9,
-    "Diesel": 0.8,
-    "Gasoline": 0.7,
-    "Super 95": 0.7,
-    "Regular/Benzine 91": 0.7
-}
-
-# Favorite make-model combinations for additional scoring
-FAVORITE_MODELS = [
-    ('skoda', 'superb'),
-    ('skoda', 'octavia'),
-    ('skoda', 'kamiq'),
-    ('audi', 'x'),
-    ('seat', 'ateca'),
-    ('cupra', 'x'),
-    ('bmw', 'x'),
-    ('ford', 'explorer'),
-    ('jaguar', 'x'),
-    ('lexus', 'x'),
-    ('maserati', 'x'),
-    ('mazda', '6'),
-    ('mercedes-benz', 'x'),
-    ('porsche', 'x'),
-    ('toyota', 'rav 4'),
-    ('toyota', 'camry'),
-    ('toyota', 'prius'),
-    ('toyota', 'yaris cross'),
-    ('volkswagen', 'arteon'),
-    ('volkswagen', 'tiguan'),
-    ('volkswagen', 'golf gti')
-]
+from .constants import WEIGHTS, FUEL_SCORES, FAVORITE_MODELS
 
 class AutoScore:
     def __init__(self, folder_path):
@@ -155,6 +105,7 @@ class AutoScore:
     def rank_cars(self, n=10):
         """Score and rank cars, ensuring unique make-model combinations first and adding a grade column."""
         self.data['score'] = self.data.apply(self.score_car, axis=1)
+        self.data['score'] = self.data['score'].round(1)
         
         # Apply the grade function
         self.data['grade'] = self.data['score'].apply(self.assign_grade)

@@ -9,27 +9,10 @@ import requests
 from bs4 import BeautifulSoup
 from .fetch_makes_and_models import load_makes_from_csv
 from tqdm import tqdm
+from .constants import EXCLUDED_CARS
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-EXCLUDED_CARS = {
-    "volkswagen": ["caddy", "taigo"],
-    "opel": ["astra", "corsa", "grandland x", "grandland", "crossland x", "crossland", "mokka"],
-    "ford": ["puma", "fiesta"],
-    "skoda": ["scala", "fabia"],
-    "hyundai": ["kona", "i20", "nexo"],
-    "toyota": ["c-hr"],
-    "bmw": ["118"],
-    "peugeot": ["208", "308"],
-    "nissan": ["micra", "juke"],
-    "renault": ["zoe"],
-    "citroen": ["c3"],
-    "kia": ["rio"],
-    "dacia": ["logan", "sandero"],
-    "seat": ["ibiza"],
-}
-
 
 class ScraperException(Exception):
     """Custom exception for scraper errors."""
@@ -119,6 +102,9 @@ class Scraper:
             "kmto": self.config.filters.get("kmto", ""),  # Maximum kilometers driven
             "powerfrom": self.config.filters.get("min_power", ""),  # Minimum power
             "powertype": "hp",  # Power type
+            "fuel": ",".join(
+                map(str, self.config.filters.get("fuel", []))
+            ),  # fuel types 
             "page": page,  # Add the page number to the parameters
             "priceto": self.config.filters.get("max_price", ""),  # Maximum price
             "seatsfrom": self.config.filters.get(
