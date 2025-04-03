@@ -4,11 +4,20 @@ from .config import Config
 from .scraper import Scraper
 from .exporter import Exporter
 from .auto_score import AutoScore
-from .notifier import Notifier
+from .notifier import Notifier  # pylint: disable=unused-import
 
 
-# main.py
 def main():
+    """
+    Main function to execute the scraping, exporting, and analysis of car listings.
+
+    This function:
+    1. Loads the configuration.
+    2. Scrapes car data with different sorting methods.
+    3. Exports the scraped data to CSV files.
+    4. Analyzes the data by ranking cars based on a calculated score.
+    5. Prints the top-ranked cars with relevant details.
+    """
     # Load configuration
     config = Config()
 
@@ -35,7 +44,7 @@ def main():
     )
 
     # (Later) Send email with the top cars
-    notifier = Notifier(config)
+    # notifier = Notifier(config)
     # notifier.send_email("Latest Car Listings", ranked_cars)
 
 
