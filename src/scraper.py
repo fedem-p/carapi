@@ -14,6 +14,7 @@ from .constants import EXCLUDED_CARS
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class ScraperException(Exception):
     """Custom exception for scraper errors."""
 
@@ -104,7 +105,7 @@ class Scraper:
             "powertype": "hp",  # Power type
             "fuel": ",".join(
                 map(str, self.config.filters.get("fuel", []))
-            ),  # fuel types 
+            ),  # fuel types
             "page": page,  # Add the page number to the parameters
             "priceto": self.config.filters.get("max_price", ""),  # Maximum price
             "seatsfrom": self.config.filters.get(

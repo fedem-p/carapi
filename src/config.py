@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 # Load environment variables from .env
 load_dotenv()
 
+
 @dataclass
 class Config:
     """Class for managing configuration settings for the scraper and email notifications."""

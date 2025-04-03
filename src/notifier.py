@@ -2,6 +2,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+
 class Notifier:
     """Handles sending notifications via email."""
 
@@ -27,7 +28,17 @@ class Notifier:
             return
 
         # Select relevant columns
-        columns = ["make", "model", "price", "mileage", "year", "score", "grade", "url", "img_url"]
+        columns = [
+            "make",
+            "model",
+            "price",
+            "mileage",
+            "year",
+            "score",
+            "grade",
+            "url",
+            "img_url",
+        ]
         cars_df = cars_df[columns]
 
         # Convert URL to clickable links
@@ -51,9 +62,9 @@ class Notifier:
                 <th>Image</th>
             </tr>
         """
-        
+
         for _, row in cars_df.iterrows():
-            highlight_style = "background-color: yellow;" if row['score'] > 24 else ""
+            highlight_style = "background-color: yellow;" if row["score"] > 24 else ""
             table_html += f"""
             <tr style="{highlight_style}">
                 <td>{row['make']}</td>
@@ -67,7 +78,7 @@ class Notifier:
                 <td><img src="{row['img_url']}" width="100"></td>
             </tr>
             """
-        
+
         table_html += """
         </table>
         </body>
@@ -76,23 +87,29 @@ class Notifier:
 
         # Create email message
         msg = MIMEMultipart()
-        msg['From'] = self.config.email_settings["username"]
-        msg['To'] = self.config.email_settings["recipient"]
-        msg['Subject'] = subject
+        msg["From"] = self.config.email_settings["username"]
+        msg["To"] = self.config.email_settings["recipient"]
+        msg["Subject"] = subject
 
         # Attach table as email body in HTML format
-        msg.attach(MIMEText(table_html, 'html'))
+        msg.attach(MIMEText(table_html, "html"))
 
         # Send email
         print("Sending email...")
         try:
-            with smtplib.SMTP(self.config.email_settings["smtp_server"], self.config.email_settings["smtp_port"]) as server:
+            with smtplib.SMTP(
+                self.config.email_settings["smtp_server"],
+                self.config.email_settings["smtp_port"],
+            ) as server:
                 server.starttls()
-                server.login(self.config.email_settings["username"], self.config.email_settings["password"])
+                server.login(
+                    self.config.email_settings["username"],
+                    self.config.email_settings["password"],
+                )
                 server.sendmail(
                     self.config.email_settings["username"],
                     self.config.email_settings["recipient"],
-                    msg.as_string()
+                    msg.as_string(),
                 )
             print("Email sent successfully.")
         except Exception as e:

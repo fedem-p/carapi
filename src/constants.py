@@ -1,6 +1,14 @@
 EXCLUDED_CARS = {
     "volkswagen": ["caddy", "taigo"],
-    "opel": ["astra", "corsa", "grandland x", "grandland", "crossland x", "crossland", "mokka"],
+    "opel": [
+        "astra",
+        "corsa",
+        "grandland x",
+        "grandland",
+        "crossland x",
+        "crossland",
+        "mokka",
+    ],
     "ford": ["puma", "fiesta"],
     "skoda": ["scala", "fabia"],
     "hyundai": ["kona", "i20", "nexo"],
@@ -28,7 +36,7 @@ WEIGHTS = {
     "emissions": 3,
     "coolness_factor": 2,
     "warranty": 3,
-    "seat_heating": 2
+    "seat_heating": 2,
 }
 
 # Fuel type scores
@@ -38,32 +46,32 @@ FUEL_SCORES = {
     "Diesel": 0.8,
     "Gasoline": 0.7,
     "Super 95": 0.7,
-    "Regular/Benzine 91": 0.7
+    "Regular/Benzine 91": 0.7,
 }
 
 # Favorite make-model combinations for additional scoring
 FAVORITE_MODELS = [
-    ('skoda', 'superb'),
-    ('skoda', 'octavia'),
-    ('skoda', 'kamiq'),
-    ('audi', 'x'),
-    ('seat', 'ateca'),
-    ('cupra', 'x'),
-    ('bmw', 'x'),
-    ('ford', 'explorer'),
-    ('jaguar', 'x'),
-    ('lexus', 'x'),
-    ('maserati', 'x'),
-    ('mazda', '6'),
-    ('mercedes-benz', 'x'),
-    ('porsche', 'x'),
-    ('toyota', 'rav 4'),
-    ('toyota', 'camry'),
-    ('toyota', 'prius'),
-    ('toyota', 'yaris cross'),
-    ('volkswagen', 'arteon'),
-    ('volkswagen', 'tiguan'),
-    ('volkswagen', 'golf gti')
+    ("skoda", "superb"),
+    ("skoda", "octavia"),
+    ("skoda", "kamiq"),
+    ("audi", "x"),
+    ("seat", "ateca"),
+    ("cupra", "x"),
+    ("bmw", "x"),
+    ("ford", "explorer"),
+    ("jaguar", "x"),
+    ("lexus", "x"),
+    ("maserati", "x"),
+    ("mazda", "6"),
+    ("mercedes-benz", "x"),
+    ("porsche", "x"),
+    ("toyota", "rav 4"),
+    ("toyota", "camry"),
+    ("toyota", "prius"),
+    ("toyota", "yaris cross"),
+    ("volkswagen", "arteon"),
+    ("volkswagen", "tiguan"),
+    ("volkswagen", "golf gti"),
 ]
 
 CSV_FILE_PATH = "data/makes_and_models.csv"
