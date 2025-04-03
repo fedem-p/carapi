@@ -1,3 +1,5 @@
+"""Handles sending notifications via email, including formatting and sending car listings."""
+
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -27,6 +29,49 @@ class Notifier:
             print("No cars to send.")
             return
 
+        # Generate HTML table for the car listings
+        table_html = self.get_table_html(cars_df)
+
+        # Create email message
+        msg = MIMEMultipart()
+        msg["From"] = self.config.email_settings["username"]
+        msg["To"] = self.config.email_settings["recipient"]
+        msg["Subject"] = subject
+
+        # Attach table as email body in HTML format
+        msg.attach(MIMEText(table_html, "html"))
+
+        # Send email
+        print("Sending email...")
+        try:
+            with smtplib.SMTP(
+                self.config.email_settings["smtp_server"],
+                self.config.email_settings["smtp_port"],
+            ) as server:
+                server.starttls()
+                server.login(
+                    self.config.email_settings["username"],
+                    self.config.email_settings["password"],
+                )
+                server.sendmail(
+                    self.config.email_settings["username"],
+                    self.config.email_settings["recipient"],
+                    msg.as_string(),
+                )
+            print("Email sent successfully.")
+        except smtplib.SMTPException as e:
+            print(f"Failed to send email: {e}")
+
+    def get_table_html(self, cars_df):
+        """
+        Generates the HTML table from the car listings DataFrame.
+
+        Args:
+            cars_df (pd.DataFrame): DataFrame containing car details.
+
+        Returns:
+            str: The HTML string for the table.
+        """
         # Select relevant columns
         columns = [
             "make",
@@ -85,32 +130,4 @@ class Notifier:
         </html>
         """
 
-        # Create email message
-        msg = MIMEMultipart()
-        msg["From"] = self.config.email_settings["username"]
-        msg["To"] = self.config.email_settings["recipient"]
-        msg["Subject"] = subject
-
-        # Attach table as email body in HTML format
-        msg.attach(MIMEText(table_html, "html"))
-
-        # Send email
-        print("Sending email...")
-        try:
-            with smtplib.SMTP(
-                self.config.email_settings["smtp_server"],
-                self.config.email_settings["smtp_port"],
-            ) as server:
-                server.starttls()
-                server.login(
-                    self.config.email_settings["username"],
-                    self.config.email_settings["password"],
-                )
-                server.sendmail(
-                    self.config.email_settings["username"],
-                    self.config.email_settings["recipient"],
-                    msg.as_string(),
-                )
-            print("Email sent successfully.")
-        except Exception as e:
-            print(f"Failed to send email: {e}")
+        return table_html
