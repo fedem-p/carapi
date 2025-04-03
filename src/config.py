@@ -6,7 +6,7 @@ import os
 from dotenv import (  # type: ignore[import-not-found] # pylint: disable=import-error
     load_dotenv,
 )
-from .fetch_makes_and_models import FILTER_MAKES
+from src.fetch_makes_and_models import FILTER_MAKES
 
 # Load environment variables from .env
 load_dotenv()

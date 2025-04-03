@@ -8,8 +8,8 @@ from urllib.parse import urlencode
 import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
-from .constants import EXCLUDED_CARS
-from .fetch_makes_and_models import load_makes_from_csv
+from src.constants import EXCLUDED_CARS
+from src.fetch_makes_and_models import load_makes_from_csv
 
 # Correct the import order
 logging.basicConfig(level=logging.INFO)

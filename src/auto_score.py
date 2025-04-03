@@ -2,7 +2,7 @@
 
 import os
 import pandas as pd
-from .constants import WEIGHTS, FUEL_SCORES, FAVORITE_MODELS
+from src.constants import WEIGHTS, FUEL_SCORES, FAVORITE_MODELS
 
 
 class AutoScore:  # pylint: disable=too-many-instance-attributes

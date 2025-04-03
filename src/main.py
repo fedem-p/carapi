@@ -1,10 +1,10 @@
 """Getting started."""
 
-from .config import Config
-from .scraper import Scraper
-from .exporter import Exporter
-from .auto_score import AutoScore
-from .notifier import Notifier  # pylint: disable=unused-import
+from src.config import Config
+from src.scraper import Scraper
+from src.exporter import Exporter
+from src.auto_score import AutoScore
+from src.notifier import Notifier  # pylint: disable=unused-import
 
 
 def main():
