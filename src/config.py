@@ -1,11 +1,12 @@
-"""config docstring."""
+"""Configuration settings for the scraper and email notifications."""
 
 from dataclasses import dataclass, field
 from typing import Dict, Any
-from .fetch_makes_and_models import FILTER_MAKES
 import os
-from dotenv import load_dotenv
-
+from dotenv import (  # type: ignore[import-not-found] # pylint: disable=import-error
+    load_dotenv,
+)
+from src.fetch_makes_and_models import FILTER_MAKES
 
 # Load environment variables from .env
 load_dotenv()
@@ -36,7 +37,7 @@ class Config:
     )
     email_settings = {
         "smtp_server": os.getenv("SMTP_SERVER"),
-        "smtp_port": int(os.getenv("SMTP_PORT", 587)),  # Default to 587 if not set
+        "smtp_port": int(os.getenv("SMTP_PORT", "587")),  # Default to "587" as a string
         "username": os.getenv("EMAIL_USERNAME"),
         "password": os.getenv("EMAIL_PASSWORD"),
         "recipient": os.getenv("EMAIL_RECIPIENT"),

@@ -1,0 +1,68 @@
+name: 🧑‍💻 AutoScout CI Pipeline 🔧
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    name: 🔍 Run Linting & Type Checking
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Set up Python and Poetry
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"  # Adjust to your desired Python version
+
+      - name: Install dependencies with Poetry
+        run: |
+          python -m pip install --upgrade pip
+          curl -sSL https://install.python-poetry.org | python3 -
+          poetry install
+
+      - name: 🔧 Run Linting (Code Formatting)
+        run: |
+          echo "Running Black for code formatting..."
+          poetry run black --check src/
+
+          echo "Running Pylint..."
+          poetry run pylint src/
+
+          echo "Running Mypy for type checking..."
+          poetry run mypy src/
+
+      - name: ✅ Linting and Type Checking Completed
+        run: echo "Linting and type checking completed successfully!"
+
+  test:
+    name: 🧪 Run Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Set up Python and Poetry
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"  # Adjust to your desired Python version
+
+      - name: Install dependencies with Poetry
+        run: |
+          python -m pip install --upgrade pip
+          curl -sSL https://install.python-poetry.org | python3 -
+          poetry install
+
+      - name: 🚦 Run tests
+        run: |
+            echo "Running Tests with Coverage..."
+            poetry run python -m pytest --cov=src tests/
+
+            echo "Tests completed successfully!"

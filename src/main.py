@@ -1,13 +1,23 @@
 """Getting started."""
 
-from .config import Config
-from .scraper import Scraper
-from .exporter import Exporter
-from .auto_score import AutoScore
+from src.config import Config
+from src.scraper import Scraper
+from src.exporter import Exporter
+from src.auto_score import AutoScore
+from src.notifier import Notifier  # pylint: disable=unused-import
 
 
-# main.py
 def main():
+    """
+    Main function to execute the scraping, exporting, and analysis of car listings.
+
+    This function:
+    1. Loads the configuration.
+    2. Scrapes car data with different sorting methods.
+    3. Exports the scraped data to CSV files.
+    4. Analyzes the data by ranking cars based on a calculated score.
+    5. Prints the top-ranked cars with relevant details.
+    """
     # Load configuration
     config = Config()
 
@@ -24,16 +34,18 @@ def main():
         exporter = Exporter(cars)
         exporter.export_to_csv(f"data/results/filtered_cars_{sort}.csv")
 
-
     ## Analyse data
-    autoscorer = AutoScore('data/results')
-    ranked_cars = autoscorer.rank_cars(n = 20)
-    print(ranked_cars[['make', 'model', 'price', 'mileage', 'year', 'score', 'grade', 'url']].to_string())
+    autoscorer = AutoScore("data/results")
+    ranked_cars = autoscorer.rank_cars(n=20)
+    print(
+        ranked_cars[
+            ["make", "model", "price", "mileage", "year", "score", "grade", "url"]
+        ].to_string()
+    )
 
-    # # (Later) Send email with the top cars
+    # (Later) Send email with the top cars
     # notifier = Notifier(config)
-    # email_body = "\n".join([f"{car['make']} {car['model']} - €{car['price']}" for car in cars])
-    # notifier.send_email("Filtered Car Listings", email_body)
+    # notifier.send_email("Latest Car Listings", ranked_cars)
 
 
 if __name__ == "__main__":

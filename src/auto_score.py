@@ -1,9 +1,13 @@
-import pandas as pd
+"""Module to calculate and rank cars based on several attributes."""
+
 import os
-from .constants import WEIGHTS, FUEL_SCORES, FAVORITE_MODELS
+import pandas as pd
+from src.constants import WEIGHTS, FUEL_SCORES, FAVORITE_MODELS
 
 
-class AutoScore:
+class AutoScore:  # pylint: disable=too-many-instance-attributes
+    """Class to calculate a score for cars based on various factors."""
+
     def __init__(self, folder_path):
         """Load all CSV files from a given folder and remove duplicates"""
         csv_files = [
@@ -132,19 +136,18 @@ class AutoScore:
         """Assign a grade based on the car's score."""
         if score > 28:
             return "Outstanding"  # New category for top-tier cars
-        elif 24 < score <= 28:
+        if 24 < score <= 28:
             return "Excellent"
-        elif 19 < score <= 24:
+        if 19 < score <= 24:
             return "Good"
-        elif 14 < score <= 19:
+        if 14 < score <= 19:
             return "Decent"
-        elif 9 < score <= 14:
+        if 9 < score <= 14:
             return "Not Good"
-        else:
-            return "Bad"
+        return "Bad"
 
     def rank_cars(self, n=10):
-        """Score and rank cars, ensuring unique make-model combinations first and adding a grade column."""
+        """Score and rank cars."""
         self.data["score"] = self.data.apply(self.score_car, axis=1)
         self.data["score"] = self.data["score"].round(1)
 
@@ -162,7 +165,7 @@ class AutoScore:
         # Fill remaining spots with duplicates if necessary
         remaining_cars = sorted_data[~sorted_data.index.isin(unique_cars.index)]
         final_selection = pd.concat(
-            [unique_cars, remaining_cars.head(n - len(unique_cars))]
+            [unique_cars, remaining_cars.head(n - len(unique_cars))], ignore_index=True
         )
 
         return final_selection

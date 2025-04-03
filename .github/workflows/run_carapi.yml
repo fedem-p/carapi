@@ -1,0 +1,25 @@
+name: 🚗 Run Program Manually 🏁
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run_program:
+    name: 🚀 Run the Program
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Set up Python and Poetry
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"  # Adjust to your desired Python version
+
+      - name: Install dependencies with Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          poetry install
+
+      - name: 🚀 Run the program using Poetry
+        run: poetry run python -m src.main

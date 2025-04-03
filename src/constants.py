@@ -1,3 +1,5 @@
+"""Constants for multiple modules."""
+
 EXCLUDED_CARS = {
     "volkswagen": ["caddy", "taigo"],
     "opel": [
