@@ -3,7 +3,12 @@
 from dataclasses import dataclass, field
 from typing import Dict, Any
 from .fetch_makes_and_models import FILTER_MAKES
+import os
+from dotenv import load_dotenv
 
+
+# Load environment variables from .env
+load_dotenv()
 
 @dataclass
 class Config:
@@ -28,13 +33,11 @@ class Config:
             "brands": FILTER_MAKES,
         }
     )
-    email_settings: Dict[str, str] = field(
-        default_factory=lambda: {
-            "smtp_server": "smtp.example.com",
-            "smtp_port": "587",
-            "username": "your_email@example.com",
-            "password": "your_password",
-            "recipient": "recipient@example.com",
-        }
-    )
+    email_settings = {
+        "smtp_server": os.getenv("SMTP_SERVER"),
+        "smtp_port": int(os.getenv("SMTP_PORT", 587)),  # Default to 587 if not set
+        "username": os.getenv("EMAIL_USERNAME"),
+        "password": os.getenv("EMAIL_PASSWORD"),
+        "recipient": os.getenv("EMAIL_RECIPIENT"),
+    }
     num_pages: int = 2  # Default number of pages to scrape
