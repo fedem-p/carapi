@@ -2,6 +2,6 @@
 
 # Run Tests with Coverage
 echo "Running Tests with Coverage..."
-poetry run pytest --cov=src tests/
+poetry run python -m pytest --cov=src tests/
 
 echo "Tests completed successfully!"
