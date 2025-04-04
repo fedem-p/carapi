@@ -43,9 +43,9 @@ def main():
         ].to_string()
     )
 
-    # (Later) Send email with the top cars
-    # notifier = Notifier(config)
-    # notifier.send_email("Latest Car Listings", ranked_cars)
+    # Send email with the top cars
+    notifier = Notifier(config)
+    notifier.send_email("Latest Car Listings", ranked_cars)
 
 
 if __name__ == "__main__":
