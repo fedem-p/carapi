@@ -2,6 +2,8 @@ name: 🚗 Run Program Manually 🏁
 
 on:
   workflow_dispatch:
+  schedule:
+  - cron: "0 0 */4 * *"  # Runs every 4 days at midnight UTC
 
 jobs:
   run_program:
