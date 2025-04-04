@@ -7,6 +7,12 @@ jobs:
   run_program:
     name: 🚀 Run the Program
     runs-on: ubuntu-latest
+    env:
+      SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+      SMTP_PORT: ${{ secrets.SMTP_PORT }}
+      EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
+      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+      EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
