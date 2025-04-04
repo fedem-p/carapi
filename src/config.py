@@ -42,4 +42,4 @@ class Config:
         "password": os.getenv("EMAIL_PASSWORD"),
         "recipient": os.getenv("EMAIL_RECIPIENT"),
     }
-    num_pages: int = 2  # Default number of pages to scrape
+    num_pages: int = 10  # Default number of pages to scrape
