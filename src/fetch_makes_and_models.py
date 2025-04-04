@@ -2,7 +2,7 @@
 
 import csv
 import requests
-from .constants import CSV_FILE_PATH, FILTER_MAKES
+from src.constants import CSV_FILE_PATH, FILTER_MAKES
 
 
 def fetch_makes_and_models():
