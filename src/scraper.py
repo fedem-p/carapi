@@ -145,6 +145,7 @@ class Scraper:
                     car_data["price"] = self._parse_price(car_data["price"])
                 except (ValueError, TypeError):
                     car_data["price"] = None
+
         # Normalize mileage
         if car_data.get("mileage") is not None:
             if isinstance(car_data["mileage"], str):
@@ -152,13 +153,75 @@ class Scraper:
                     car_data["mileage"] = self._parse_km(car_data["mileage"])
                 except (ValueError, TypeError):
                     car_data["mileage"] = None
+
         # Normalize year
         if car_data.get("year") is not None:
             try:
                 car_data["year"] = int(car_data["year"])
             except (ValueError, TypeError):
                 car_data["year"] = None
-        # Add more normalization as needed
+
+        # Normalize vehicle_mileage (if different from mileage)
+        if car_data.get("vehicle_mileage") is not None:
+            if isinstance(car_data["vehicle_mileage"], str):
+                try:
+                    car_data["vehicle_mileage"] = self._parse_km(
+                        car_data["vehicle_mileage"]
+                    )
+                except (ValueError, TypeError):
+                    car_data["vehicle_mileage"] = None
+
+        # Normalize integer fields
+        integer_fields = ["seats", "doors", "previous_owner"]
+        for field in integer_fields:
+            if car_data.get(field) is not None:
+                try:
+                    car_data[field] = int(car_data[field])
+                except (ValueError, TypeError):
+                    car_data[field] = None
+
+        # Normalize string fields to ensure they're not None for safe operations
+        string_fields = [
+            "fuel_type",
+            "body_type",
+            "emission_class",
+            "make",
+            "model",
+            "warranty",
+            "full_service_history",
+            "non_smoker_vehicle",
+            "power",
+            "gearbox",
+            "engine_size",
+            "emission_sticker",
+            "car_type",
+            "country_version",
+            "offer_number",
+            "first_registration",
+            "general_inspection",
+        ]
+        for field in string_fields:
+            if car_data.get(field) is None or car_data.get(field) == "":
+                car_data[field] = ""
+            else:
+                car_data[field] = str(car_data[field]).strip()
+
+        # Normalize boolean fields
+        boolean_fields = [
+            "android_auto",
+            "car_play",
+            "cruise_control",
+            "adaptive_cruise_control",
+            "seat_heating",
+        ]
+        for field in boolean_fields:
+            if car_data.get(field) is None:
+                car_data[field] = False
+            elif isinstance(car_data[field], str):
+                car_data[field] = car_data[field].lower() in ["true", "yes", "1"]
+            else:
+                car_data[field] = bool(car_data[field])
+
         return car_data
 
     def _extract_car_details(self, car):

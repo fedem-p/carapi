@@ -38,6 +38,106 @@ def test_clean_car_data_normalizes():
     assert clean["year"] is None
 
 
+def test_clean_car_data_comprehensive():
+    """Test comprehensive data cleaning for all field types."""
+    scraper = Scraper(DummyConfig())
+    
+    # Test with complex real-world data
+    dirty = {
+        "price": "25.000€",
+        "mileage": "50,000km", 
+        "year": "2018",
+        "vehicle_mileage": "50000 km",
+        "seats": "5",
+        "doors": "4",
+        "previous_owner": "2",
+        "fuel_type": "Gasoline",
+        "body_type": None,
+        "emission_class": "",
+        "make": "BMW",
+        "model": None,
+        "warranty": "Yes",
+        "full_service_history": "No",
+        "non_smoker_vehicle": None,
+        "power": "150 hp",
+        "android_auto": "true",
+        "car_play": False,
+        "cruise_control": "yes",
+        "adaptive_cruise_control": None,
+        "seat_heating": 1
+    }
+    
+    clean = scraper._clean_car_data(dirty.copy())
+    
+    # Test numeric fields
+    assert clean["price"] == 25000
+    assert clean["mileage"] == 50000
+    assert clean["year"] == 2018
+    assert clean["vehicle_mileage"] == 50000
+    assert clean["seats"] == 5
+    assert clean["doors"] == 4
+    assert clean["previous_owner"] == 2
+    
+    # Test string fields
+    assert clean["fuel_type"] == "Gasoline"
+    assert clean["body_type"] == ""  # None converted to empty string
+    assert clean["emission_class"] == ""  # Empty string remains empty
+    assert clean["make"] == "BMW"
+    assert clean["model"] == ""  # None converted to empty string
+    assert clean["warranty"] == "Yes"
+    assert clean["full_service_history"] == "No"
+    assert clean["non_smoker_vehicle"] == ""  # None converted to empty string
+    assert clean["power"] == "150 hp"
+    
+    # Test boolean fields
+    assert clean["android_auto"] is True  # "true" string converted to True
+    assert clean["car_play"] is False
+    assert clean["cruise_control"] is True  # "yes" string converted to True
+    assert clean["adaptive_cruise_control"] is False  # None converted to False
+    assert clean["seat_heating"] is True  # 1 converted to True
+
+
+def test_clean_car_data_invalid_integers():
+    """Test cleaning of invalid integer fields."""
+    scraper = Scraper(DummyConfig())
+    
+    dirty = {
+        "seats": "invalid",
+        "doors": None,
+        "previous_owner": "not_a_number",
+        "vehicle_mileage": "abc km"
+    }
+    
+    clean = scraper._clean_car_data(dirty.copy())
+    
+    assert clean["seats"] is None
+    assert clean["doors"] is None
+    assert clean["previous_owner"] is None
+    assert clean["vehicle_mileage"] is None
+
+
+def test_clean_car_data_boolean_variations():
+    """Test various boolean input formats."""
+    scraper = Scraper(DummyConfig())
+    
+    test_cases = [
+        {"android_auto": "True", "expected": True},
+        {"android_auto": "true", "expected": True},
+        {"android_auto": "YES", "expected": True},
+        {"android_auto": "yes", "expected": True},
+        {"android_auto": "1", "expected": True},
+        {"android_auto": "false", "expected": False},
+        {"android_auto": "no", "expected": False},
+        {"android_auto": "0", "expected": False},
+        {"android_auto": "", "expected": False},
+        {"android_auto": "random", "expected": False},
+    ]
+    
+    for test_case in test_cases:
+        clean = scraper._clean_car_data(test_case.copy())
+        assert clean["android_auto"] == test_case["expected"], f"Failed for input: {test_case['android_auto']}"
+
+
 def test_parse_price():
     scraper = Scraper(DummyConfig())
     assert scraper._parse_price("12.345€") == 12345

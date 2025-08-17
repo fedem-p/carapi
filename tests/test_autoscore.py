@@ -117,6 +117,82 @@ def test_rank_unique_cars(mock_listdir, mock_read_csv, mock_data):
 
 @patch('pandas.read_csv')
 @patch('os.listdir')
+def test_score_car_with_missing_data(mock_listdir, mock_read_csv):
+    """Test that scoring handles missing/None data gracefully."""
+    # Create data with missing/None values
+    problematic_data = pd.DataFrame({
+        'url': ['url1', 'url2', 'url3'],
+        'price': [10000, None, 15000],
+        'mileage': [50000, 60000, None],
+        'fuel_type': ['petrol', None, ''],
+        'android_auto': [True, False, None],
+        'car_play': [True, None, False],
+        'adaptive_cruise_control': [None, False, True],
+        'seat_heating': [True, None, False],
+        'power': ['150 hp', None, ''],
+        'year': [2018, None, 2020],
+        'body_type': ['sedan', None, ''],
+        'emission_class': ['6', '', None],
+        'make': ['BMW', None, ''],
+        'model': ['3 Series', '', None],
+        'warranty': ['yes', None, ''],
+        'previous_owner': [1, None, 2],
+        'full_service_history': ['yes', None, ''],
+        'non_smoker_vehicle': ['yes', '', None],
+    })
+    
+    mock_listdir.return_value = ['file1.csv']
+    mock_read_csv.return_value = problematic_data
+    autoscore = AutoScore(folder_path="mock_folder")
+    
+    # Test that all cars can be scored without errors using the cleaned data
+    for i in range(len(autoscore.data)):
+        car = autoscore.data.iloc[i]
+        score = autoscore.score_car(car)
+        assert isinstance(score, (int, float)), f"Score should be numeric for car {i}"
+        assert not pd.isna(score), f"Score should not be NaN for car {i}"
+        assert score >= 0, f"Score should be non-negative for car {i}"
+
+
+@patch('pandas.read_csv')
+@patch('os.listdir')
+def test_score_car_with_malformed_data(mock_listdir, mock_read_csv):
+    """Test that scoring handles malformed data gracefully."""
+    # Create data with malformed values
+    malformed_data = pd.DataFrame({
+        'url': ['url1'],
+        'price': [10000],
+        'mileage': [50000],
+        'fuel_type': ['petrol'],
+        'android_auto': [True],
+        'car_play': [True],
+        'adaptive_cruise_control': [False],
+        'seat_heating': [True],
+        'power': ['invalid power format'],  # Malformed power
+        'year': [2018],
+        'body_type': ['sedan'],
+        'emission_class': ['6'],
+        'make': ['BMW'],
+        'model': ['3 Series'],
+        'warranty': ['yes'],
+        'previous_owner': [1],
+        'full_service_history': ['yes'],
+        'non_smoker_vehicle': ['yes'],
+    })
+    
+    mock_listdir.return_value = ['file1.csv']
+    mock_read_csv.return_value = malformed_data
+    autoscore = AutoScore(folder_path="mock_folder")
+    
+    # Test that malformed data doesn't cause crashes
+    car = malformed_data.iloc[0]
+    score = autoscore.score_car(car)
+    assert isinstance(score, (int, float)), "Score should be numeric even with malformed data"
+    assert score >= 0, "Score should be non-negative even with malformed data"
+
+
+@patch('pandas.read_csv')
+@patch('os.listdir')
 def test_normalize_with_empty_data(mock_listdir, mock_read_csv, mock_data):
     """Test normalization with empty data (edge case)."""
     autoscore = create_autoscore(mock_listdir, mock_read_csv, mock_data)
