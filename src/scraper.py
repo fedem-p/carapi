@@ -136,6 +136,29 @@ class Scraper:
         # Add more filtering rules here as needed
         return False
 
+    def _clean_car_data(self, car_data):
+        """Normalize and clean car data fields."""
+        # Normalize price
+        if car_data.get("price") is not None:
+            try:
+                car_data["price"] = int(str(car_data["price"]).replace("€", "").replace(".", "").strip())
+            except Exception:
+                car_data["price"] = None
+        # Normalize mileage
+        if car_data.get("mileage") is not None:
+            try:
+                car_data["mileage"] = int(str(car_data["mileage"]).replace("km", "").replace(",", "").strip())
+            except Exception:
+                car_data["mileage"] = None
+        # Normalize year
+        if car_data.get("year") is not None:
+            try:
+                car_data["year"] = int(car_data["year"])
+            except Exception:
+                car_data["year"] = None
+        # Add more normalization as needed
+        return car_data
+
     def _extract_car_details(self, car):
         """Helper method to extract car details from a single listing."""
         try:
@@ -164,12 +187,13 @@ class Scraper:
                         "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     }
                 )
+                car_data = self._clean_car_data(car_data)
                 logger.debug(
                     "Scraped new car: %s | %s | %s euro | %skm",
                     car_make,
                     car_model,
-                    car_price,
-                    car_km,
+                    car_data.get("price"),
+                    car_data.get("mileage"),
                 )
                 return car_data
 
