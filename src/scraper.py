@@ -44,14 +44,13 @@ class Scraper:
         for page in tqdm(
             range(1, self.config.num_pages + 1), desc="Scraping pages", unit="page"
         ):
-            url = self.construct_url(page, sort_method)
+            url = self._construct_url(page, sort_method)
 
             logger.debug("============= Scraping page %s =============", page)
 
             response = self._get_response(url)
             if response:
-                soup = BeautifulSoup(response.text, "html.parser")
-                cars = self.extract_car_data(soup)
+                cars = self._parse_cars_from_html(response.text)
                 all_cars.extend(cars)
 
             wait_time = random.uniform(1, 3)
@@ -75,7 +74,7 @@ class Scraper:
             logger.error("An error occurred: %s", e)
         return None
 
-    def construct_url(self, page, sort_method):
+    def _construct_url(self, page, sort_method):
         """Construct the search URL with query parameters based on the filters."""
         params = {
             "atype": "C",  # Example: Car type
@@ -108,6 +107,11 @@ class Scraper:
 
         return f"{self.config.base_url}/search?" + urlencode(params)
 
+    def _parse_cars_from_html(self, html):
+        """Parse HTML and extract car data."""
+        soup = BeautifulSoup(html, "html.parser")
+        return self.extract_car_data(soup)
+
     def extract_car_data(self, soup):
         """Extract relevant car data from the parsed HTML."""
         car_list = []
@@ -124,6 +128,39 @@ class Scraper:
 
         return car_list
 
+    def _filter_car(self, car_make, car_model):
+        """Return True if the car should be excluded based on make/model or other rules."""
+        if car_make in EXCLUDED_CARS and car_model in EXCLUDED_CARS[car_make]:
+            logger.debug("Skipped %s | %s", car_make, car_model)
+            return True
+        # Add more filtering rules here as needed
+        return False
+
+    def _clean_car_data(self, car_data):
+        """Normalize and clean car data fields."""
+        # Normalize price
+        if car_data.get("price") is not None:
+            if isinstance(car_data["price"], str):
+                try:
+                    car_data["price"] = self._parse_price(car_data["price"])
+                except (ValueError, TypeError):
+                    car_data["price"] = None
+        # Normalize mileage
+        if car_data.get("mileage") is not None:
+            if isinstance(car_data["mileage"], str):
+                try:
+                    car_data["mileage"] = self._parse_km(car_data["mileage"])
+                except (ValueError, TypeError):
+                    car_data["mileage"] = None
+        # Normalize year
+        if car_data.get("year") is not None:
+            try:
+                car_data["year"] = int(car_data["year"])
+            except (ValueError, TypeError):
+                car_data["year"] = None
+        # Add more normalization as needed
+        return car_data
+
     def _extract_car_details(self, car):
         """Helper method to extract car details from a single listing."""
         try:
@@ -135,8 +172,7 @@ class Scraper:
             car_km = self._parse_km(car.get("data-mileage"))
             car_year = self._parse_year(car.get("data-first-registration"))
 
-            if car_make in EXCLUDED_CARS and car_model in EXCLUDED_CARS[car_make]:
-                logger.debug("Skipped %s | %s", car_make, car_model)
+            if self._filter_car(car_make, car_model):
                 return None
 
             # Scrape additional details and update the car data
@@ -153,6 +189,7 @@ class Scraper:
                         "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     }
                 )
+                car_data = self._clean_car_data(car_data)
                 logger.debug(
                     "Scraped new car: %s | %s | %s euro | %skm",
                     car_make,
