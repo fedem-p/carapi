@@ -44,14 +44,13 @@ class Scraper:
         for page in tqdm(
             range(1, self.config.num_pages + 1), desc="Scraping pages", unit="page"
         ):
-            url = self.construct_url(page, sort_method)
+            url = self._construct_url(page, sort_method)
 
             logger.debug("============= Scraping page %s =============", page)
 
             response = self._get_response(url)
             if response:
-                soup = BeautifulSoup(response.text, "html.parser")
-                cars = self.extract_car_data(soup)
+                cars = self._parse_cars_from_html(response.text)
                 all_cars.extend(cars)
 
             wait_time = random.uniform(1, 3)
@@ -75,7 +74,7 @@ class Scraper:
             logger.error("An error occurred: %s", e)
         return None
 
-    def construct_url(self, page, sort_method):
+    def _construct_url(self, page, sort_method):
         """Construct the search URL with query parameters based on the filters."""
         params = {
             "atype": "C",  # Example: Car type
@@ -107,6 +106,11 @@ class Scraper:
             params["mmmv"] = ",".join(mmvm_parts)
 
         return f"{self.config.base_url}/search?" + urlencode(params)
+
+    def _parse_cars_from_html(self, html):
+        """Parse HTML and extract car data."""
+        soup = BeautifulSoup(html, "html.parser")
+        return self.extract_car_data(soup)
 
     def extract_car_data(self, soup):
         """Extract relevant car data from the parsed HTML."""
