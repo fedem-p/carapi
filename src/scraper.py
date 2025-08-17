@@ -140,21 +140,23 @@ class Scraper:
         """Normalize and clean car data fields."""
         # Normalize price
         if car_data.get("price") is not None:
-            try:
-                car_data["price"] = int(str(car_data["price"]).replace("€", "").replace(".", "").strip())
-            except Exception:
-                car_data["price"] = None
+            if isinstance(car_data["price"], str):
+                try:
+                    car_data["price"] = self._parse_price(car_data["price"])
+                except (ValueError, TypeError):
+                    car_data["price"] = None
         # Normalize mileage
         if car_data.get("mileage") is not None:
-            try:
-                car_data["mileage"] = int(str(car_data["mileage"]).replace("km", "").replace(",", "").strip())
-            except Exception:
-                car_data["mileage"] = None
+            if isinstance(car_data["mileage"], str):
+                try:
+                    car_data["mileage"] = self._parse_km(car_data["mileage"])
+                except (ValueError, TypeError):
+                    car_data["mileage"] = None
         # Normalize year
         if car_data.get("year") is not None:
             try:
                 car_data["year"] = int(car_data["year"])
-            except Exception:
+            except (ValueError, TypeError):
                 car_data["year"] = None
         # Add more normalization as needed
         return car_data
@@ -192,8 +194,8 @@ class Scraper:
                     "Scraped new car: %s | %s | %s euro | %skm",
                     car_make,
                     car_model,
-                    car_data.get("price"),
-                    car_data.get("mileage"),
+                    car_price,
+                    car_km,
                 )
                 return car_data
 
