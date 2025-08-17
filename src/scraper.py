@@ -128,6 +128,14 @@ class Scraper:
 
         return car_list
 
+    def _filter_car(self, car_make, car_model):
+        """Return True if the car should be excluded based on make/model or other rules."""
+        if car_make in EXCLUDED_CARS and car_model in EXCLUDED_CARS[car_make]:
+            logger.debug("Skipped %s | %s", car_make, car_model)
+            return True
+        # Add more filtering rules here as needed
+        return False
+
     def _extract_car_details(self, car):
         """Helper method to extract car details from a single listing."""
         try:
@@ -139,8 +147,7 @@ class Scraper:
             car_km = self._parse_km(car.get("data-mileage"))
             car_year = self._parse_year(car.get("data-first-registration"))
 
-            if car_make in EXCLUDED_CARS and car_model in EXCLUDED_CARS[car_make]:
-                logger.debug("Skipped %s | %s", car_make, car_model)
+            if self._filter_car(car_make, car_model):
                 return None
 
             # Scrape additional details and update the car data
