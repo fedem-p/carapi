@@ -1,11 +1,12 @@
 services:
-  scraper:
+  dashboard:
     build:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - .:/app  # Mount the current directory to /app in the container
-    command: ["poetry", "run", "python", "-m", "src.main"]  # Default command to run the scraper
+      - .:/app
+    command: ["poetry", "run", "python", "dashboard/app.py"]
+    ports:
+      - "5000:5000"
     environment:
       - PYTHONUNBUFFERED=1
-      - SEND_EMAIL=${SEND_EMAIL}  # Get from host environment
