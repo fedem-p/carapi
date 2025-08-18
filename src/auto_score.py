@@ -2,13 +2,13 @@
 
 import os
 import pandas as pd
-from src.constants import WEIGHTS, FUEL_SCORES, FAVORITE_MODELS
+from src.config import Config
 
 
 class AutoScore:  # pylint: disable=too-many-instance-attributes
     """Class to calculate a score for cars based on various factors."""
 
-    def __init__(self, folder_path):
+    def __init__(self, folder_path, profile="standard"):
         """Load all CSV files from a given folder and remove duplicates"""
         csv_files = [
             os.path.join(folder_path, f)
@@ -20,6 +20,11 @@ class AutoScore:  # pylint: disable=too-many-instance-attributes
         self.data.fillna(
             "", inplace=True
         )  # Handle missing values by replacing with an empty string
+        self.config = Config()
+        self.profile = profile
+        self.weights = self.config.scoring_profiles[profile]["weights"]
+        self.fuel_scores = self.config.scoring_profiles[profile]["fuel_scores"]
+        self.favorite_models = self.config.scoring_profiles[profile]["favorite_models"]
         self._calculate_ranges()
 
     def _calculate_ranges(self):
@@ -57,30 +62,30 @@ class AutoScore:  # pylint: disable=too-many-instance-attributes
         score = 0
 
         # Price score (normalized)
-        score += WEIGHTS["price"] * self.normalize(
+        score += self.weights["price"] * self.normalize(
             car["price"], self.price_min, self.price_max
         )
 
         # Mileage score (normalized)
-        score += WEIGHTS["mileage"] * self.normalize(
+        score += self.weights["mileage"] * self.normalize(
             car["mileage"], self.mileage_min, self.mileage_max
         )
 
         # Fuel Type Matching
-        fuel_score = FUEL_SCORES.get(car["fuel_type"].lower(), 0)
-        score += WEIGHTS["fuel_type"] * fuel_score
+        fuel_score = self.fuel_scores.get(car["fuel_type"].lower(), 0)
+        score += self.weights["fuel_type"] * fuel_score
 
         # Features (Android Auto & CarPlay)
         if car["android_auto"] and car["car_play"]:
-            score += WEIGHTS["features"]
+            score += self.weights["features"]
 
         # Adaptive Cruise Control
         if car["adaptive_cruise_control"]:
-            score += WEIGHTS["adaptive_cruise"]
+            score += self.weights["adaptive_cruise"]
 
         # Seat Heating
         if car["seat_heating"]:
-            score += WEIGHTS["seat_heating"]
+            score += self.weights["seat_heating"]
 
         # Power (normalized)
         power_hp = (
@@ -88,35 +93,35 @@ class AutoScore:  # pylint: disable=too-many-instance-attributes
             if car["power"] and car["power"].split()[0].isdigit()
             else 0
         )
-        score += WEIGHTS["power"] * self.normalize(
+        score += self.weights["power"] * self.normalize(
             power_hp, self.power_min, self.power_max
         )
 
         # Registration Year (normalized)
-        score += WEIGHTS["registration_year"] * self.normalize(
+        score += self.weights["registration_year"] * self.normalize(
             int(car["year"]), self.year_min, self.year_max
         )
 
         # Body Type
         if car["body_type"].lower() in ["station wagon", "off-road/pick-up", "sedan"]:
-            score += WEIGHTS["body_type"]
+            score += self.weights["body_type"]
 
         # Emissions
         if "6" in car["emission_class"].lower():
-            score += WEIGHTS["emissions"]
+            score += self.weights["emissions"]
         elif "5" in car["emission_class"].lower():
-            score += WEIGHTS["emissions"] * 0.8
+            score += self.weights["emissions"] * 0.8
 
         # Coolness Factor
-        if (car["make"].lower(), car["model"].lower()) in FAVORITE_MODELS or (
-            car["make"].lower() in [make for make, _ in FAVORITE_MODELS]
+        if (car["make"].lower(), car["model"].lower()) in self.favorite_models or (
+            car["make"].lower() in [make for make, _ in self.favorite_models]
             and car["model"].lower() == "x"
         ):
-            score += WEIGHTS["coolness_factor"]
+            score += self.weights["coolness_factor"]
 
         # Warranty Bonus
         if "no" not in car["warranty"].lower():
-            score += WEIGHTS["warranty"]
+            score += self.weights["warranty"]
 
         # Previous Owners
         if car["previous_owner"] == 1:
