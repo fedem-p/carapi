@@ -32,6 +32,7 @@ jobs:
           echo "Running Black for code formatting..."
           poetry run black --check src/
           poetry run black --check dashboard/
+          poetry run black --check tests/
 
           echo "Running Pylint..."
           poetry run pylint src/

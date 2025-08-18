@@ -4,6 +4,7 @@
 echo "Running Black..."
 poetry run black src/
 poetry run black dashboard/
+poetry run black tests/
 
 # Run Pylint
 echo "Running Pylint..."
