@@ -5,6 +5,8 @@ from src.scraper import Scraper
 from src.exporter import Exporter
 from src.auto_score import AutoScore
 from src.notifier import Notifier  # pylint: disable=unused-import
+import argparse
+import os
 
 
 def main():
@@ -18,6 +20,16 @@ def main():
     4. Analyzes the data by ranking cars based on a calculated score.
     5. Prints the top-ranked cars with relevant details.
     """
+    parser = argparse.ArgumentParser(description="Car listings scraper and analyzer")
+    parser.add_argument('--email', action='store_true', help='Send email notification with top cars')
+    args = parser.parse_args()
+
+    # Check environment variable as well as flag
+    send_email_env = os.environ.get("SEND_EMAIL", "false").lower() == "true"
+    send_email = args.email or send_email_env
+
+    print(f"Send email notifications: {send_email}")
+
     # Load configuration
     config = Config()
 
@@ -43,9 +55,10 @@ def main():
         ].to_string()
     )
 
-    # Send email with the top cars
-    notifier = Notifier(config)
-    notifier.send_email("Latest Car Listings", ranked_cars)
+    # Send email with the top cars if --email flag or SEND_EMAIL env is set
+    if send_email:
+        notifier = Notifier(config)
+        notifier.send_email("Latest Car Listings", ranked_cars)
 
 
 if __name__ == "__main__":
