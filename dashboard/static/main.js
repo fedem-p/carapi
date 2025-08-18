@@ -42,6 +42,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     });
 
-    // Poll every 5 seconds (5000 ms)
-    setInterval(updateProgress, 5000);
+    // Poll every 15 seconds (15000 ms)
+    setInterval(updateProgress, 15000);
 });

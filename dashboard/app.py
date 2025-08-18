@@ -16,42 +16,50 @@ dashboard_state = {
     'scraping': False
 }
 
+dashboard_state_lock = threading.Lock()
+
 app = Flask(__name__)
 
-# Dummy scrape function (replace with real logic)
+# Scrape and process car data for the dashboard
 def run_scrape():
     from src.config import Config
     from src.scraper import Scraper
     from src.exporter import Exporter
     from src.auto_score import AutoScore
-    dashboard_state['scraping'] = True
-    dashboard_state['progress'] = 0
-    dashboard_state['details'] = 'Loading configuration...'
+    with dashboard_state_lock:
+        dashboard_state['scraping'] = True
+        dashboard_state['progress'] = 0
+        dashboard_state['details'] = 'Loading configuration...'
     config = Config()
-    dashboard_state['progress'] = 5
-    dashboard_state['details'] = 'Starting scraping...'
+    with dashboard_state_lock:
+        dashboard_state['progress'] = 5
+        dashboard_state['details'] = 'Starting scraping...'
     scraper = Scraper(config)
-    dashboard_state['progress'] = 10
+    with dashboard_state_lock:
+        dashboard_state['progress'] = 10
 
     def progress_callback(page, total_pages):
-        # Progress: 10% (start), 60% (end of scraping)
         progress = 10 + int(50 * page / total_pages)
-        dashboard_state['progress'] = min(progress, 60)
-        dashboard_state['details'] = f'Scraping page {page}/{total_pages}'
+        with dashboard_state_lock:
+            dashboard_state['progress'] = min(progress, 60)
+            dashboard_state['details'] = f'Scraping page {page}/{total_pages}'
 
     cars = scraper.scrape_data(sort_method="standard", progress_callback=progress_callback)
-    dashboard_state['progress'] = 60
-    dashboard_state['details'] = f'Exporting results for standard'
+    with dashboard_state_lock:
+        dashboard_state['progress'] = 60
+        dashboard_state['details'] = f'Exporting results for standard'
     exporter = Exporter(cars)
     exporter.export_to_csv(f"data/results/filtered_cars_standard.csv")
-    dashboard_state['progress'] = 80
-    dashboard_state['details'] = 'Analyzing data...'
+    with dashboard_state_lock:
+        dashboard_state['progress'] = 80
+        dashboard_state['details'] = 'Analyzing data...'
     autoscorer = AutoScore("data/results")
     ranked_cars = autoscorer.rank_cars(n=20)
-    dashboard_state['results'] = ranked_cars
-    dashboard_state['progress'] = 100
-    dashboard_state['details'] = 'Scrape complete!'
-    dashboard_state['scraping'] = False
+    with dashboard_state_lock:
+        dashboard_state['results'] = ranked_cars
+        dashboard_state['progress'] = 100
+        dashboard_state['details'] = 'Scrape complete!'
+        dashboard_state['scraping'] = False
 
 @app.route('/')
 def index():
@@ -59,32 +67,32 @@ def index():
 
 @app.route('/start-scrape', methods=['POST'])
 def start_scrape():
-    if dashboard_state['scraping']:
-        return jsonify({'status': 'already running'})
+    with dashboard_state_lock:
+        if dashboard_state['scraping']:
+            return jsonify({'status': 'already running'})
     t = threading.Thread(target=run_scrape)
+    with dashboard_state_lock:
+        dashboard_state['scrape_thread'] = t
     t.start()
     return jsonify({'status': 'started'})
 
 @app.route('/progress')
 def progress():
-    return jsonify({
-        'progress': dashboard_state['progress'],
-        'details': dashboard_state['details'],
-        'scraping': dashboard_state['scraping']
-    })
+    with dashboard_state_lock:
+        return jsonify({
+            'progress': dashboard_state['progress'],
+            'details': dashboard_state['details'],
+            'scraping': dashboard_state['scraping']
+        })
 
 @app.route('/results')
 def results():
-    df = dashboard_state['results']
+    from src.table_utils import get_table_html
+    with dashboard_state_lock:
+        df = dashboard_state['results']
     if df is None:
         return '<p>No results yet.</p>'
-    # Import get_table_html from your notifier
-    from src.notifier import Notifier
-    # Dummy config for Notifier (not used for table)
-    class DummyConfig:
-        email_settings = {'username': '', 'recipient': '', 'smtp_server': '', 'smtp_port': '', 'password': ''}
-    notifier = Notifier(DummyConfig())
-    html = notifier.get_table_html(df.head(20))
+    html = get_table_html(df.head(20))
     return html
 
 if __name__ == '__main__':
