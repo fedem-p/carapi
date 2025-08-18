@@ -7,21 +7,22 @@ import json
 from dotenv import (  # type: ignore[import-not-found] # pylint: disable=import-error
     load_dotenv,
 )
-from src.fetch_makes_and_models import FILTER_MAKES
 
 # Load environment variables from .env
 load_dotenv()
 
-SETTINGS_PATH = os.path.join(os.path.dirname(__file__), '..', 'settings.json')
+SETTINGS_PATH = os.path.join(os.path.dirname(__file__), "..", "settings.json")
 
 
 def load_settings():
-    with open(SETTINGS_PATH, 'r', encoding='utf-8') as f:
+    """Load settings from the settings.json file."""
+    with open(SETTINGS_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
 def save_settings(settings):
-    with open(SETTINGS_PATH, 'w', encoding='utf-8') as f:
+    """Save settings to the settings.json file."""
+    with open(SETTINGS_PATH, "w", encoding="utf-8") as f:
         json.dump(settings, f, indent=2)
 
 
@@ -65,6 +66,7 @@ class Config:
     }
 
     def __post_init__(self):
+        """Load settings from file and initialize config attributes."""
         settings = load_settings()
         self.filters = settings.get("filters", {})
         self.num_pages = settings.get("num_pages", 10)
@@ -72,6 +74,7 @@ class Config:
         self.excluded_cars = settings.get("excluded_cars", {})
 
     def save(self):
+        """Save the current configuration to the settings file."""
         settings = {
             "filters": self.filters,
             "num_pages": self.num_pages,
@@ -81,6 +84,7 @@ class Config:
         save_settings(settings)
 
     def get_filters_for_frontend(self):
+        """Return filters with user-friendly labels for the frontend."""
         f = self.filters.copy()
         # Map codes to labels for frontend
         f["body"] = [BODY_TYPE_MAP_REV.get(x, x) for x in f.get("body", [])]
@@ -90,12 +94,12 @@ class Config:
         try:
             min_power_kw = float(f.get("min_power", 0))
             f["min_power"] = str(round(min_power_kw * 1.341022))
-        except Exception:
+        except (ValueError, TypeError):
             f["min_power"] = ""
         return f
 
     def set_filters_from_frontend(self, f):
-        # Map labels to codes for backend
+        """Convert frontend filter labels to backend codes."""
         filters = f.copy()
         filters["body"] = [BODY_TYPE_MAP.get(x, x) for x in f.get("body", [])]
         filters["fuel"] = [FUEL_MAP.get(x, x) for x in f.get("fuel", [])]
@@ -104,6 +108,6 @@ class Config:
         try:
             min_power_hp = float(f.get("min_power", 0))
             filters["min_power"] = str(round(min_power_hp / 1.341022))
-        except Exception:
+        except (ValueError, TypeError):
             filters["min_power"] = ""
         return filters
