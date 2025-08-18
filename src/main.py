@@ -1,12 +1,12 @@
 """Getting started."""
 
+import argparse
+import os
 from src.config import Config
 from src.scraper import Scraper
 from src.exporter import Exporter
 from src.auto_score import AutoScore
 from src.notifier import Notifier  # pylint: disable=unused-import
-import argparse
-import os
 
 
 def main():
@@ -21,7 +21,9 @@ def main():
     5. Prints the top-ranked cars with relevant details.
     """
     parser = argparse.ArgumentParser(description="Car listings scraper and analyzer")
-    parser.add_argument('--email', action='store_true', help='Send email notification with top cars')
+    parser.add_argument(
+        "--email", action="store_true", help="Send email notification with top cars"
+    )
     args = parser.parse_args()
 
     # Check environment variable as well as flag
