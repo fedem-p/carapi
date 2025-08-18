@@ -5,21 +5,21 @@ from unittest.mock import patch
 import requests
 from bs4 import BeautifulSoup
 
-EXCLUDED_CARS = {"BrandA": ["ModelX", "ModelY"]}
+EXCLUDED_CARS = {"BrandA": ["ModelX", "ModelY"], "skoda": ["fabia"], "ssangyong": ["korando", "tivoli"]}
 
 class DummyConfig:
     def __init__(self):
         self.filters = {}
         self.base_url = "http://example.com"
         self.num_pages = 1
+        self.excluded_cars = EXCLUDED_CARS
 
 
 def test_filter_car_excludes():
     scraper = Scraper(DummyConfig())
-    with patch.object(scraper_module, 'EXCLUDED_CARS', EXCLUDED_CARS):
-        assert scraper._filter_car("BrandA", "ModelX") is True
-        assert scraper._filter_car("BrandA", "OtherModel") is False
-        assert scraper._filter_car("OtherBrand", "ModelX") is False
+    assert scraper._filter_car("BrandA", "ModelX") is True
+    assert scraper._filter_car("BrandA", "OtherModel") is False
+    assert scraper._filter_car("OtherBrand", "ModelX") is False
 
 
 def test_clean_car_data_normalizes():
@@ -79,7 +79,7 @@ def test_parse_cars_from_html():
         cars = scraper._parse_cars_from_html(html)
     assert isinstance(cars, list)
     # At least one car should be found in a real sample
-    assert len(cars) == 14
+    assert len(cars) == 17
     # Check that expected keys exist in the first car dict
     assert "make" in cars[0]
     assert "model" in cars[0]

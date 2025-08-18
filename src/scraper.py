@@ -8,7 +8,6 @@ from urllib.parse import urlencode
 import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
-from src.constants import EXCLUDED_CARS
 from src.fetch_makes_and_models import load_makes_from_csv
 
 # Correct the import order
@@ -132,7 +131,8 @@ class Scraper:
 
     def _filter_car(self, car_make, car_model):
         """Return True if the car should be excluded based on make/model or other rules."""
-        if car_make in EXCLUDED_CARS and car_model in EXCLUDED_CARS[car_make]:
+        excluded = self.config.excluded_cars
+        if car_make in excluded and car_model in excluded[car_make]:
             logger.debug("Skipped %s | %s", car_make, car_model)
             return True
         # Add more filtering rules here as needed

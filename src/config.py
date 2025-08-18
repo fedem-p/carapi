@@ -43,3 +43,82 @@ class Config:
         "recipient": os.getenv("EMAIL_RECIPIENT"),
     }
     num_pages: int = 10  # Default number of pages to scrape
+    # Scoring profiles: adjust weights and criteria per profile
+    scoring_profiles: Dict[str, Dict[str, Any]] = field(
+        default_factory=lambda: {
+            "standard": {
+                "weights": {
+                    "price": 4.5,
+                    "mileage": 3,
+                    "fuel_type": 3,
+                    "features": 3,
+                    "adaptive_cruise": 2,
+                    "power": 1,
+                    "registration_year": 3,
+                    "body_type": 2,
+                    "emissions": 3,
+                    "coolness_factor": 2,
+                    "warranty": 3,
+                    "seat_heating": 2,
+                },
+                "fuel_scores": {
+                    "electric/diesel": 1.0,
+                    "electric/gasoline": 0.9,
+                    "diesel": 0.8,
+                    "gasoline": 0.7,
+                    "super 95": 0.7,
+                    "regular/benzine 91": 0.7,
+                },
+                "favorite_models": [
+                    ("skoda", "superb"),
+                    ("skoda", "octavia"),
+                    ("skoda", "kamiq"),
+                    ("audi", "x"),
+                    ("seat", "ateca"),
+                    ("cupra", "x"),
+                    ("bmw", "x"),
+                    ("ford", "explorer"),
+                    ("jaguar", "x"),
+                    ("lexus", "x"),
+                    ("maserati", "x"),
+                    ("mazda", "6"),
+                    ("mercedes-benz", "x"),
+                    ("porsche", "x"),
+                    ("toyota", "rav 4"),
+                    ("toyota", "camry"),
+                    ("toyota", "prius"),
+                    ("toyota", "yaris cross"),
+                    ("volkswagen", "arteon"),
+                    ("volkswagen", "tiguan"),
+                    ("volkswagen", "golf gti"),
+                ],
+            },
+            # Add more profiles as needed
+        }
+    )
+    excluded_cars: Dict[str, list] = field(
+        default_factory=lambda: {
+            "volkswagen": ["caddy", "taigo"],
+            "opel": [
+                "astra",
+                "corsa",
+                "grandland x",
+                "grandland",
+                "crossland x",
+                "crossland",
+                "mokka",
+            ],
+            "ford": ["puma", "fiesta"],
+            "skoda": ["scala", "fabia"],
+            "hyundai": ["kona", "i20", "nexo"],
+            "toyota": ["c-hr"],
+            "bmw": ["118"],
+            "peugeot": ["208", "308"],
+            "nissan": ["micra", "juke"],
+            "renault": ["zoe", "clio"],
+            "citroen": ["c3"],
+            "kia": ["rio", "niro"],
+            "dacia": ["logan", "sandero"],
+            "seat": ["ibiza"],
+        }
+    )
