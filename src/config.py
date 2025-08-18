@@ -3,6 +3,7 @@
 from dataclasses import dataclass, field
 from typing import Dict, Any
 import os
+import json
 from dotenv import (  # type: ignore[import-not-found] # pylint: disable=import-error
     load_dotenv,
 )
@@ -11,114 +12,98 @@ from src.fetch_makes_and_models import FILTER_MAKES
 # Load environment variables from .env
 load_dotenv()
 
+SETTINGS_PATH = os.path.join(os.path.dirname(__file__), '..', 'settings.json')
+
+
+def load_settings():
+    with open(SETTINGS_PATH, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+
+def save_settings(settings):
+    with open(SETTINGS_PATH, 'w', encoding='utf-8') as f:
+        json.dump(settings, f, indent=2)
+
+
+# Mappings for user-friendly labels <-> codes
+BODY_TYPE_MAP = {
+    "Compact": "1",
+    "Convertible": "2",
+    "Coupe": "3",
+    "SUV": "4",
+    "Station Wagon": "5",
+    "Sedan": "6",
+}
+BODY_TYPE_MAP_REV = {v: k for k, v in BODY_TYPE_MAP.items()}
+FUEL_MAP = {
+    "Hybrid": "2",
+    "Hybrid/Diesel": "3",
+    "Gasoline": "B",
+    "Diesel": "D",
+}
+FUEL_MAP_REV = {v: k for k, v in FUEL_MAP.items()}
+SORT_OPTIONS = ["standard", "price", "age"]
+SORT_LABELS = {"standard": "Standard", "price": "Price", "age": "Age"}
+SORT_LABELS_REV = {v: k for k, v in SORT_LABELS.items()}
+
 
 @dataclass
 class Config:
     """Class for managing configuration settings for the scraper and email notifications."""
 
     base_url: str = "https://www.autoscout24.com/lst"  # Default URL set to .de
-    filters: Dict[str, Any] = field(
-        default_factory=lambda: {
-            "body": ["2", "3", "4", "5", "6"],
-            "custtype": "D",  # Customer type: dealer
-            "country": "D",  # Country code
-            "emclass": "5",
-            "ensticker": "4",
-            "eq": ["37"],
-            "min_year": "2020",
-            "kmto": "100000",
-            "min_power": "74",
-            "max_price": "20000",
-            "min_seats": "4",
-            "fuel": ["2", "3", "B", "D"],
-            "sort": "standard",
-            "brands": FILTER_MAKES,
-        }
-    )
+    filters: Dict[str, Any] = field(default_factory=dict)
+    num_pages: int = 10
+    scoring_profiles: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+    excluded_cars: Dict[str, list] = field(default_factory=dict)
     email_settings = {
         "smtp_server": os.getenv("SMTP_SERVER"),
-        "smtp_port": int(os.getenv("SMTP_PORT", "587")),  # Default to "587" as a string
+        "smtp_port": int(os.getenv("SMTP_PORT", "587")),
         "username": os.getenv("EMAIL_USERNAME"),
         "password": os.getenv("EMAIL_PASSWORD"),
         "recipient": os.getenv("EMAIL_RECIPIENT"),
     }
-    num_pages: int = 10  # Default number of pages to scrape
-    # Scoring profiles: adjust weights and criteria per profile
-    scoring_profiles: Dict[str, Dict[str, Any]] = field(
-        default_factory=lambda: {
-            "standard": {
-                "weights": {
-                    "price": 4.5,
-                    "mileage": 3,
-                    "fuel_type": 3,
-                    "features": 3,
-                    "adaptive_cruise": 2,
-                    "power": 1,
-                    "registration_year": 3,
-                    "body_type": 2,
-                    "emissions": 3,
-                    "coolness_factor": 2,
-                    "warranty": 3,
-                    "seat_heating": 2,
-                },
-                "fuel_scores": {
-                    "electric/diesel": 1.0,
-                    "electric/gasoline": 0.9,
-                    "diesel": 0.8,
-                    "gasoline": 0.7,
-                    "super 95": 0.7,
-                    "regular/benzine 91": 0.7,
-                },
-                "favorite_models": [
-                    ("skoda", "superb"),
-                    ("skoda", "octavia"),
-                    ("skoda", "kamiq"),
-                    ("audi", "x"),
-                    ("seat", "ateca"),
-                    ("cupra", "x"),
-                    ("bmw", "x"),
-                    ("ford", "explorer"),
-                    ("jaguar", "x"),
-                    ("lexus", "x"),
-                    ("maserati", "x"),
-                    ("mazda", "6"),
-                    ("mercedes-benz", "x"),
-                    ("porsche", "x"),
-                    ("toyota", "rav 4"),
-                    ("toyota", "camry"),
-                    ("toyota", "prius"),
-                    ("toyota", "yaris cross"),
-                    ("volkswagen", "arteon"),
-                    ("volkswagen", "tiguan"),
-                    ("volkswagen", "golf gti"),
-                ],
-            },
-            # Add more profiles as needed
+
+    def __post_init__(self):
+        settings = load_settings()
+        self.filters = settings.get("filters", {})
+        self.num_pages = settings.get("num_pages", 10)
+        self.scoring_profiles = settings.get("scoring_profiles", {})
+        self.excluded_cars = settings.get("excluded_cars", {})
+
+    def save(self):
+        settings = {
+            "filters": self.filters,
+            "num_pages": self.num_pages,
+            "scoring_profiles": self.scoring_profiles,
+            "excluded_cars": self.excluded_cars,
         }
-    )
-    excluded_cars: Dict[str, list] = field(
-        default_factory=lambda: {
-            "volkswagen": ["caddy", "taigo"],
-            "opel": [
-                "astra",
-                "corsa",
-                "grandland x",
-                "grandland",
-                "crossland x",
-                "crossland",
-                "mokka",
-            ],
-            "ford": ["puma", "fiesta"],
-            "skoda": ["scala", "fabia"],
-            "hyundai": ["kona", "i20", "nexo"],
-            "toyota": ["c-hr"],
-            "bmw": ["118"],
-            "peugeot": ["208", "308"],
-            "nissan": ["micra", "juke"],
-            "renault": ["zoe", "clio"],
-            "citroen": ["c3"],
-            "kia": ["rio", "niro"],
-            "dacia": ["logan", "sandero"],
-            "seat": ["ibiza"],
-        }
-    )
+        save_settings(settings)
+
+    def get_filters_for_frontend(self):
+        f = self.filters.copy()
+        # Map codes to labels for frontend
+        f["body"] = [BODY_TYPE_MAP_REV.get(x, x) for x in f.get("body", [])]
+        f["fuel"] = [FUEL_MAP_REV.get(x, x) for x in f.get("fuel", [])]
+        f["sort"] = f.get("sort", "standard")  # Return code, not label
+        # min_power: convert kW to HP for frontend
+        try:
+            min_power_kw = float(f.get("min_power", 0))
+            f["min_power"] = str(round(min_power_kw * 1.341022))
+        except Exception:
+            f["min_power"] = ""
+        return f
+
+    def set_filters_from_frontend(self, f):
+        # Map labels to codes for backend
+        filters = f.copy()
+        filters["body"] = [BODY_TYPE_MAP.get(x, x) for x in f.get("body", [])]
+        filters["fuel"] = [FUEL_MAP.get(x, x) for x in f.get("fuel", [])]
+        filters["sort"] = f.get("sort", "standard")
+        # min_power: convert HP to kW for backend
+        try:
+            min_power_hp = float(f.get("min_power", 0))
+            filters["min_power"] = str(round(min_power_hp / 1.341022))
+        except Exception:
+            filters["min_power"] = ""
+        return filters
