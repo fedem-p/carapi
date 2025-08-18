@@ -5,7 +5,12 @@ from unittest.mock import patch
 import requests
 from bs4 import BeautifulSoup
 
-EXCLUDED_CARS = {"BrandA": ["ModelX", "ModelY"], "skoda": ["fabia"], "ssangyong": ["korando", "tivoli"]}
+EXCLUDED_CARS = {
+    "BrandA": ["ModelX", "ModelY"],
+    "skoda": ["fabia"],
+    "ssangyong": ["korando", "tivoli"],
+}
+
 
 class DummyConfig:
     def __init__(self):
@@ -61,10 +66,10 @@ def test_parse_year():
 
 def test_construct_url():
     config = DummyConfig()
-    config.filters = {"body": [1,2], "brands": ["testbrand"]}
+    config.filters = {"body": [1, 2], "brands": ["testbrand"]}
     config.base_url = "http://example.com"
     scraper = Scraper(config)
-    with patch('src.scraper.load_makes_from_csv', return_value={"testbrand": "123"}):
+    with patch("src.scraper.load_makes_from_csv", return_value={"testbrand": "123"}):
         url = scraper._construct_url(1, "standard")
         assert url.startswith("http://example.com/search?")
         assert "body=1%2C2" in url
@@ -75,7 +80,9 @@ def test_parse_cars_from_html():
     scraper = Scraper(DummyConfig())
     with open("tests/autoscout_sample.html", encoding="utf-8") as f:
         html = f.read()
-    with patch.object(scraper, 'scrape_car_details', return_value={"test_detail": "value"}):
+    with patch.object(
+        scraper, "scrape_car_details", return_value={"test_detail": "value"}
+    ):
         cars = scraper._parse_cars_from_html(html)
     assert isinstance(cars, list)
     # At least one car should be found in a real sample
@@ -87,16 +94,20 @@ def test_parse_cars_from_html():
 
 def test_get_response_timeout(monkeypatch):
     scraper = Scraper(DummyConfig())
+
     def raise_timeout(*args, **kwargs):
         raise requests.exceptions.Timeout("timeout")
+
     monkeypatch.setattr(requests, "get", raise_timeout)
     assert scraper._get_response("http://fakeurl") is None
 
 
 def test_get_response_request_exception(monkeypatch):
     scraper = Scraper(DummyConfig())
+
     def raise_request_exception(*args, **kwargs):
         raise requests.exceptions.RequestException("error")
+
     monkeypatch.setattr(requests, "get", raise_request_exception)
     assert scraper._get_response("http://fakeurl") is None
 
@@ -111,8 +122,10 @@ def test_extract_car_data_no_listings():
 
 def test_scrape_car_details_exception(monkeypatch):
     scraper = Scraper(DummyConfig())
+
     def raise_request_exception(*args, **kwargs):
         raise requests.exceptions.RequestException("error")
+
     monkeypatch.setattr(requests, "get", raise_request_exception)
     with pytest.raises(scraper_module.ScraperException):
         scraper.scrape_car_details("http://fakeurl")
@@ -122,13 +135,17 @@ def test_scrape_car_details_from_sample(monkeypatch):
     scraper = Scraper(DummyConfig())
     with open("tests/autoscout_sample_single_car.html", encoding="utf-8") as f:
         html = f.read()
+
     class MockResponse:
         def __init__(self, text):
             self.text = text
+
         def raise_for_status(self):
             pass
+
     def mock_get(*args, **kwargs):
         return MockResponse(html)
+
     monkeypatch.setattr(requests, "get", mock_get)
     details = scraper.scrape_car_details("http://fakeurl")
     assert isinstance(details, dict)
@@ -157,7 +174,10 @@ def test_scrape_car_details_from_sample(monkeypatch):
     assert details["cruise_control"] is False
     assert details["adaptive_cruise_control"] is False
     assert details["seat_heating"] is False
-    assert details["img_url"] == "https://prod.pictures.autoscout24.net/listing-images/ac39c2df-580c-4f54-bc31-345eb24f9489_b545e5ca-bbcc-4527-9924-a188541aca8e.jpg/360x270.jpg"
+    assert (
+        details["img_url"]
+        == "https://prod.pictures.autoscout24.net/listing-images/ac39c2df-580c-4f54-bc31-345eb24f9489_b545e5ca-bbcc-4527-9924-a188541aca8e.jpg/360x270.jpg"
+    )
     # make/model are not in details, only in main listing
     assert "make" not in details
     assert "model" not in details
