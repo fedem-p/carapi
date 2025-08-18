@@ -42,9 +42,7 @@ class Scraper:
         """
         all_cars = []
         total_pages = self.config.num_pages
-        for page in tqdm(
-            range(1, total_pages + 1), desc="Scraping pages", unit="page"
-        ):
+        for page in tqdm(range(1, total_pages + 1), desc="Scraping pages", unit="page"):
             url = self._construct_url(page, sort_method)
 
             logger.debug("============= Scraping page %s =============", page)
