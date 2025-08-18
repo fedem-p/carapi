@@ -95,5 +95,58 @@ def results():
     html = get_table_html(df.head(20))
     return html
 
+from src.config import Config
+
+@app.route('/config', methods=['GET'])
+def get_config():
+    config = Config()
+    # Map codes to labels for frontend
+    filters = config.get_filters_for_frontend()
+    return jsonify({
+        'filters': filters,
+        'num_pages': config.num_pages,
+        'scoring_profiles': config.scoring_profiles,
+        'excluded_cars': config.excluded_cars
+    })
+
+@app.route('/config', methods=['POST'])
+def set_config():
+    data = request.get_json()
+    config = Config()
+    # Update only allowed fields
+    if 'filters' in data:
+        config.filters = config.set_filters_from_frontend(data['filters'])
+    if 'num_pages' in data:
+        config.num_pages = data['num_pages']
+    if 'scoring_profiles' in data:
+        config.scoring_profiles = data['scoring_profiles']
+    if 'excluded_cars' in data:
+        config.excluded_cars = data['excluded_cars']
+
+    config.save()
+    return jsonify({'status': 'success'})
+
+@app.route('/notify', methods=['POST'])
+def notify():
+    from src.config import Config
+    from src.notifier import Notifier
+    import traceback
+    try:
+        with dashboard_state_lock:
+            ranked_cars = dashboard_state['results']
+        if ranked_cars is None:
+            return jsonify({'status': 'error', 'error': 'No results to send.'})
+        config = Config()
+        notifier = Notifier(config)
+        try:
+            notifier.send_email("Latest Car Listings", ranked_cars)
+        except Exception as e:
+            print(f"Failed to send email: {e}")
+            traceback.print_exc()
+            return jsonify({'status': 'error', 'error': str(e)})
+        return jsonify({'status': 'success'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'error': str(e)})
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
