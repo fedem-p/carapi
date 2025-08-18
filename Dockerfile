@@ -23,5 +23,8 @@ COPY . /app/
 # Make the linting script executable
 RUN chmod +x /app/lint.sh /app/test.sh /app/update_make_models.sh
 
-# Command to run the scraper (this can be adjusted later)
-CMD ["poetry", "run", "python", "-m", "src.main"]
+# Expose the Flask port for the dashboard
+EXPOSE 5000
+
+# Default command: run Flask dashboard (can be overridden for CLI)
+CMD ["poetry", "run", "python", "dashboard/app.py"]

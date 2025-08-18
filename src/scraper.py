@@ -31,7 +31,7 @@ class Scraper:
         """
         self.config = config
 
-    def scrape_data(self, sort_method="standard"):
+    def scrape_data(self, sort_method="standard", progress_callback=None):
         """Scrape car data from the configured URL for the specified number of pages.
 
         Raises:
@@ -41,9 +41,8 @@ class Scraper:
             list: A list of dictionaries containing car data.
         """
         all_cars = []
-        for page in tqdm(
-            range(1, self.config.num_pages + 1), desc="Scraping pages", unit="page"
-        ):
+        total_pages = self.config.num_pages
+        for page in tqdm(range(1, total_pages + 1), desc="Scraping pages", unit="page"):
             url = self._construct_url(page, sort_method)
 
             logger.debug("============= Scraping page %s =============", page)
@@ -52,6 +51,9 @@ class Scraper:
             if response:
                 cars = self._parse_cars_from_html(response.text)
                 all_cars.extend(cars)
+
+            if progress_callback:
+                progress_callback(page, total_pages)
 
             wait_time = random.uniform(1, 3)
             logger.debug(

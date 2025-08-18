@@ -1,0 +1,71 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    margin: 0;
+    padding: 0;
+}
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 32px;
+}
+h1 {
+    margin-top: 0;
+}
+#start-btn {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 24px;
+}
+#start-btn:hover {
+    background: #0056b3;
+}
+#progress-container {
+    width: 100%;
+    background: #e0e0e0;
+    border-radius: 4px;
+    margin-bottom: 24px;
+    height: 32px;
+    position: relative;
+}
+#progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #28a745;
+    border-radius: 4px;
+    transition: width 0.3s;
+}
+#progress-details {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    color: #333;
+}
+#results {
+    margin-top: 32px;
+}
+.table-img {
+    height: 80px;
+    width: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid #eee;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: #fafafa;
+    object-fit: cover;
+}
+.table-img:hover {
+    transform: scale(1.08);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    border-color: #007bff;
+}
