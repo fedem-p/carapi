@@ -31,12 +31,16 @@ jobs:
         run: |
           echo "Running Black for code formatting..."
           poetry run black --check src/
+          poetry run black --check dashboard/
+          poetry run black --check tests/
 
           echo "Running Pylint..."
           poetry run pylint src/
+          poetry run pylint dashboard/
 
           echo "Running Mypy for type checking..."
           poetry run mypy src/
+          poetry run mypy dashboard/
 
       - name: ✅ Linting and Type Checking Completed
         run: echo "Linting and type checking completed successfully!"

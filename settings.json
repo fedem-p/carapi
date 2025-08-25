@@ -1,0 +1,196 @@
+{
+  "filters": {
+    "body": [
+      "2",
+      "3",
+      "4",
+      "5",
+      "6"
+    ],
+    "min_year": "2020",
+    "kmto": "100000",
+    "min_power": "75",
+    "max_price": "20000",
+    "min_seats": "4",
+    "fuel": [
+      "2",
+      "3",
+      "B",
+      "D"
+    ],
+    "sort": "standard"
+  },
+  "num_pages": 5,
+  "scoring_profiles": {
+    "standard": {
+      "favorite_models": [
+        [
+          "skoda",
+          "superb"
+        ],
+        [
+          "skoda",
+          "octavia"
+        ],
+        [
+          "skoda",
+          "kamiq"
+        ],
+        [
+          "audi",
+          "x"
+        ],
+        [
+          "seat",
+          "ateca"
+        ],
+        [
+          "cupra",
+          "x"
+        ],
+        [
+          "bmw",
+          "x"
+        ],
+        [
+          "ford",
+          "explorer"
+        ],
+        [
+          "jaguar",
+          "x"
+        ],
+        [
+          "lexus",
+          "x"
+        ],
+        [
+          "maserati",
+          "x"
+        ],
+        [
+          "mazda",
+          "6"
+        ],
+        [
+          "mercedes-benz",
+          "x"
+        ],
+        [
+          "porsche",
+          "x"
+        ],
+        [
+          "toyota",
+          "rav 4"
+        ],
+        [
+          "toyota",
+          "camry"
+        ],
+        [
+          "toyota",
+          "prius"
+        ],
+        [
+          "toyota",
+          "yaris cross"
+        ],
+        [
+          "volkswagen",
+          "arteon"
+        ],
+        [
+          "volkswagen",
+          "tiguan"
+        ],
+        [
+          "volkswagen",
+          "golf gti"
+        ]
+      ],
+      "fuel_scores": {
+        "diesel": 0.8,
+        "electric/diesel": 1,
+        "electric/gasoline": 0.9,
+        "gasoline": 0.7,
+        "regular/benzine 91": 0.7,
+        "super 95": 0.7
+      },
+      "weights": {
+        "adaptive_cruise": 2,
+        "body_type": 2,
+        "coolness_factor": 2,
+        "emissions": 3,
+        "features": 3,
+        "fuel_type": 3,
+        "mileage": 3,
+        "power": 1,
+        "price": 4.5,
+        "registration_year": 3,
+        "seat_heating": 2,
+        "warranty": 3
+      }
+    }
+  },
+  "excluded_cars": {
+    "bmw": [
+      "118"
+    ],
+    "citroen": [
+      "c3"
+    ],
+    "dacia": [
+      "logan",
+      "sandero"
+    ],
+    "ford": [
+      "puma",
+      "fiesta"
+    ],
+    "hyundai": [
+      "kona",
+      "i20",
+      "nexo"
+    ],
+    "kia": [
+      "rio",
+      "niro"
+    ],
+    "nissan": [
+      "micra",
+      "juke"
+    ],
+    "opel": [
+      "astra",
+      "corsa",
+      "grandland x",
+      "grandland",
+      "crossland x",
+      "crossland",
+      "mokka"
+    ],
+    "peugeot": [
+      "208",
+      "308"
+    ],
+    "renault": [
+      "zoe",
+      "clio"
+    ],
+    "seat": [
+      "ibiza"
+    ],
+    "skoda": [
+      "scala",
+      "fabia"
+    ],
+    "toyota": [
+      "c-hr"
+    ],
+    "volkswagen": [
+      "caddy",
+      "taigo"
+    ]
+  }
+}

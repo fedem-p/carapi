@@ -4,19 +4,86 @@
     <meta charset="UTF-8">
     <title>Car Scraper Dashboard</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slim-select@2.8.0/dist/slimselect.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Car Scraper Dashboard</h1>
-        <button id="start-btn">Start Scraping</button>
-        <div id="progress-container">
-            <div id="progress-bar"></div>
-            <span id="progress-details"></span>
+    <div class="dashboard-layout">
+        <div class="container">
+            <h1>Car Scraper Dashboard</h1>
+            <button id="start-btn">Start Scraping</button>
+            <div id="progress-container">
+                <div id="progress-bar"></div>
+                <span id="progress-details"></span>
+            </div>
+            <button id="send-email-btn" class="button" disabled>Send Email</button>
+            <div id="results">
+                <p>No results yet.</p>
+            </div>
         </div>
-        <div id="results">
-            <p>No results yet.</p>
+        <div id="settings-panel" class="side-panel">
+            <h2>Settings</h2>
+            <form id="settings-form">
+                <fieldset>
+                    <legend><button type="button" class="collapsible open" data-target="options-fields">Options ▼</button></legend>
+                    <div id="options-fields" class="collapsible-content" style="display: block;">
+                        <label>Num Pages:<input type="number" name="num_pages" id="num-pages"></label><br>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend><button type="button" class="collapsible open" data-target="filters-fields">Filters ▼</button></legend>
+                    <div id="filters-fields" class="collapsible-content" style="display: block;">
+                        <label>Body:
+                            <select name="body" id="filter-body" multiple size="6">
+                                <option value="Compact">Compact</option>
+                                <option value="Convertible">Convertible</option>
+                                <option value="Coupe">Coupe</option>
+                                <option value="SUV">SUV</option>
+                                <option value="Station Wagon">Station Wagon</option>
+                                <option value="Sedan">Sedan</option>
+                            </select>
+                        </label><br>
+                        <label>Min Year:<input type="number" name="min_year" id="filter-min-year"></label><br>
+                        <label>Max KM:<input type="number" name="kmto" id="filter-kmto"></label><br>
+                        <label>Min Power (HP):<input type="number" name="min_power" id="filter-min-power"></label><br>
+                        <label>Max Price:<input type="number" name="max_price" id="filter-max-price"></label><br>
+                        <label>Min Seats:<input type="number" name="min_seats" id="filter-min-seats"></label><br>
+                        <label>Fuel:
+                            <select name="fuel" id="filter-fuel" multiple size="4">
+                                <option value="Hybrid">Hybrid</option>
+                                <option value="Hybrid/Diesel">Hybrid/Diesel</option>
+                                <option value="Gasoline">Gasoline</option>
+                                <option value="Diesel">Diesel</option>
+                            </select>
+                        </label><br>
+                        <label>Sort:
+                            <select name="sort" id="filter-sort">
+                                <option value="standard">Standard</option>
+                                <option value="price">Price</option>
+                                <option value="age">Age</option>
+                            </select>
+                        </label><br>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend><button type="button" class="collapsible" data-target="scoring-fields">Scoring Profiles ▼</button></legend>
+                    <div id="scoring-fields" class="collapsible-content">
+                        <textarea id="scoring-profiles" rows="6" style="width:100%"></textarea>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend><button type="button" class="collapsible" data-target="excluded-fields">Excluded Cars ▼</button></legend>
+                    <div id="excluded-fields" class="collapsible-content">
+                        <textarea id="excluded-cars" rows="4" style="width:100%"></textarea>
+                    </div>
+                </fieldset>
+            </form>
+            <div class="side-panel-footer">
+                <button type="submit" form="settings-form">Save Settings</button>
+                <span id="settings-status"></span>
+            </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/slim-select@2.8.0/dist/slimselect.min.js"></script>
     <script src="/static/main.js"></script>
 </body>
 </html>

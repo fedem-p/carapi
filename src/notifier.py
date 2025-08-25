@@ -3,6 +3,7 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import pandas as pd
 from src.table_utils import get_table_html
 
 
@@ -24,8 +25,10 @@ class Notifier:  # pylint: disable=too-few-public-methods
 
         Args:
             subject (str): The email subject.
-            cars_df (pd.DataFrame): DataFrame containing car details.
+            cars_df (pd.DataFrame or list): Car details as DataFrame or list of dicts.
         """
+        if isinstance(cars_df, list):
+            cars_df = pd.DataFrame(cars_df)
         if cars_df.empty:
             print("No cars to send.")
             return
@@ -48,13 +51,13 @@ class Notifier:  # pylint: disable=too-few-public-methods
             with smtplib.SMTP(
                 self.config.email_settings["smtp_server"],
                 self.config.email_settings["smtp_port"],
-            ) as server:
-                server.starttls()
-                server.login(
+            ) as smtp:
+                smtp.starttls()
+                smtp.login(
                     self.config.email_settings["username"],
                     self.config.email_settings["password"],
                 )
-                server.sendmail(
+                smtp.sendmail(
                     self.config.email_settings["username"],
                     self.config.email_settings["recipient"],
                     msg.as_string(),
