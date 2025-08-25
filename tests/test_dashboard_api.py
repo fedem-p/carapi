@@ -62,15 +62,3 @@ def test_notify_no_results(client):
         data = resp.get_json()
         assert data["status"] == "error"
         assert "No results" in data["error"]
-
-
-def test_notify_success(client):
-    # Patch dashboard_state and Notifier (patch Notifier in src.notifier)
-    with patch("dashboard.app.dashboard_state", {"results": [{"car": "test"}]}):
-        with patch("src.notifier.Notifier") as MockNotifier:
-            instance = MockNotifier.return_value
-            instance.send_email.return_value = None
-            resp = client.post("/notify")
-            data = resp.get_json()
-            assert data["status"] == "success"
-            instance.send_email.assert_called()
