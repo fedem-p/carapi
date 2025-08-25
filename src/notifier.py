@@ -44,18 +44,21 @@ class Notifier:  # pylint: disable=too-few-public-methods
 
         # Send email
         print("Sending email...")
-        with smtplib.SMTP(
-            self.config.email_settings["smtp_server"],
-            self.config.email_settings["smtp_port"],
-        ) as server:
-            server.starttls()
-            server.login(
-                self.config.email_settings["username"],
-                self.config.email_settings["password"],
-            )
-            server.sendmail(
-                self.config.email_settings["username"],
-                self.config.email_settings["recipient"],
-                msg.as_string(),
-            )
-        print("Email sent successfully.")
+        try:
+            with smtplib.SMTP(
+                self.config.email_settings["smtp_server"],
+                self.config.email_settings["smtp_port"],
+            ) as smtp:
+                smtp.starttls()
+                smtp.login(
+                    self.config.email_settings["username"],
+                    self.config.email_settings["password"],
+                )
+                smtp.sendmail(
+                    self.config.email_settings["username"],
+                    self.config.email_settings["recipient"],
+                    msg.as_string(),
+                )
+            print("Email sent successfully.")
+        except smtplib.SMTPException as e:
+            print(f"Failed to send email: {e}")

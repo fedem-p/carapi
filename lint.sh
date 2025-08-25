@@ -14,6 +14,6 @@ poetry run pylint dashboard/
 # Run Mypy for type checking
 echo "Running Mypy..."
 poetry run mypy src/
-poetry run mypy dashboardthat/
+poetry run mypy dashboard/
 
 echo "Linting and type checking completed successfully!"
