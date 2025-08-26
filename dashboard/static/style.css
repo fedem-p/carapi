@@ -39,7 +39,7 @@ body {
 h1 {
     margin-top: 0;
 }
-#start-btn {
+.button {
     background: #007bff;
     color: #fff;
     border: none;
@@ -48,9 +48,18 @@ h1 {
     font-size: 16px;
     cursor: pointer;
     margin-bottom: 24px;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: inline-block;
 }
-#start-btn:hover {
+.button:hover {
     background: #0056b3;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+.button:disabled {
+    background: #b0b0b0;
+    color: #f4f4f4;
+    cursor: not-allowed;
 }
 #progress-container {
     width: 100%;
@@ -75,8 +84,142 @@ h1 {
     font-weight: bold;
     color: #333;
 }
+/* Tab Navigation Styling */
+.tabs {
+    display: flex;
+    border-bottom: 2px solid #e9ecef;
+    margin: 24px 0 0 0;
+    background: #f8f9fa;
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.tab-button {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 16px 24px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    border-bottom: 3px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.tab-button span {
+    font-size: 18px;
+}
+
+.tab-button:hover {
+    background: #e9ecef;
+    color: #495057;
+    transform: translateY(-1px);
+}
+
+.tab-button.active {
+    background: #fff;
+    color: #007bff;
+    border-bottom-color: #007bff;
+    font-weight: 600;
+    transform: translateY(-1px);
+    box-shadow: 0 -2px 8px rgba(0,123,255,0.1);
+}
+
+.tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #007bff, #0056b3);
+}
+
+/* Tab Content Styling */
+.tab-content {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 24px;
+    min-height: 200px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive tab styling */
+@media (max-width: 768px) {
+    .tab-button {
+        padding: 12px 16px;
+        font-size: 14px;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .tab-button span {
+        font-size: 16px;
+    }
+    
+    .tab-content {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .tabs {
+        flex-direction: column;
+        border-radius: 8px;
+    }
+    
+    .tab-button {
+        border-bottom: none;
+        border-right: 3px solid transparent;
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: 16px 20px;
+    }
+    
+    .tab-button.active {
+        border-right-color: #007bff;
+        border-bottom-color: transparent;
+    }
+    
+    .tab-button.active::after {
+        bottom: auto;
+        right: -1px;
+        left: auto;
+        top: 0;
+        width: 2px;
+        height: 100%;
+        background: linear-gradient(180deg, #007bff, #0056b3);
+    }
+    
+    .tab-content {
+        border-top: 1px solid #e9ecef;
+        border-radius: 0 0 8px 8px;
+    }
+}
+
 #results {
-    margin-top: 32px;
+    margin-top: 0;
 }
 .table-img {
     height: 80px;
@@ -152,29 +295,7 @@ h1 {
     background: #0056b3;
     box-shadow: 0 4px 16px rgba(0,0,0,0.15);
 }
-#send-email-btn {
-    background: #007bff;
-    color: #fff;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-bottom: 24px;
-    margin-top: 8px;
-    transition: background 0.2s, box-shadow 0.2s;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    display: inline-block;
-}
-#send-email-btn:disabled {
-    background: #b0b0b0;
-    color: #f4f4f4;
-    cursor: not-allowed;
-}
-#send-email-btn:hover:not(:disabled) {
-    background: #0056b3;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-}
+
 #settings-status {
     margin-left: 12px;
     font-weight: bold;

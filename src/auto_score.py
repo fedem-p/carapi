@@ -5,11 +5,39 @@ import pandas as pd
 from src.config import Config
 
 
+BEST_CARS_FILE = os.path.join(
+    os.path.dirname(__file__), "..", "data", "best", "best_cars.csv"
+)
+
+
+def save_best_cars(top_cars, max_rows=300, best_cars_file=None):
+    """Save top cars to BEST_CARS_FILE, keeping only max_rows, deduplicated and sorted by score."""
+    if best_cars_file is None:
+        best_cars_file = BEST_CARS_FILE
+    best_dir = os.path.dirname(best_cars_file)
+    os.makedirs(best_dir, exist_ok=True)
+    if os.path.exists(best_cars_file):
+        existing = pd.read_csv(best_cars_file)
+        combined = pd.concat([existing, top_cars], ignore_index=True)
+        # Remove duplicates by url, keep best score
+        combined["score"] = combined.apply(
+            lambda row: row["score"] if "score" in row else 0, axis=1
+        )
+        combined = combined.sort_values(by="score", ascending=False)
+        combined = combined.drop_duplicates(subset=["url"], keep="first")
+        combined = combined.head(max_rows)
+        combined.to_csv(best_cars_file, index=False)
+    else:
+        # If file doesn't exist, just save the top cars (clip if needed)
+        top_cars = top_cars.sort_values(by="score", ascending=False).head(max_rows)
+        top_cars.to_csv(best_cars_file, index=False)
+
+
 class AutoScore:  # pylint: disable=too-many-instance-attributes
     """Class to calculate a score for cars based on various factors."""
 
     def __init__(self, folder_path, profile="standard"):
-        """Load all CSV files from a given folder and remove duplicates"""
+        """Load all CSV files from a given folder and remove duplicates."""
         csv_files = [
             os.path.join(folder_path, f)
             for f in os.listdir(folder_path)
@@ -28,7 +56,7 @@ class AutoScore:  # pylint: disable=too-many-instance-attributes
         self._calculate_ranges()
 
     def _calculate_ranges(self):
-        """Determine min/max values for normalization"""
+        """Determine min/max values for normalization."""
         self.price_min, self.price_max = (
             self.data["price"].min(),
             self.data["price"].max(),
@@ -37,25 +65,27 @@ class AutoScore:  # pylint: disable=too-many-instance-attributes
             self.data["mileage"].min(),
             self.data["mileage"].max(),
         )
-        self.power_min, self.power_max = (
+        self.power_min = (
             self.data["power"]
             .apply(
                 lambda x: int(str(x).split()[0]) if str(x).split()[0].isdigit() else 0
             )
-            .min(),
+            .min()
+        )
+        self.power_max = (
             self.data["power"]
             .apply(
                 lambda x: int(str(x).split()[0]) if str(x).split()[0].isdigit() else 0
             )
-            .max(),
+            .max()
         )
         self.year_min, self.year_max = self.data["year"].min(), self.data["year"].max()
 
     def normalize(self, value, min_val, max_val):
-        """Normalize numerical values between 0 and 1"""
-        return (
-            1 - abs(value - min_val) / (max_val - min_val) if max_val > min_val else 1
-        )
+        """Normalize numerical values between 0 and 1."""
+        if max_val > min_val:
+            return 1 - abs(value - min_val) / (max_val - min_val)
+        return 1
 
     def score_car(self, car):
         """Compute the total score for a single car entry"""
@@ -151,26 +181,39 @@ class AutoScore:  # pylint: disable=too-many-instance-attributes
             return "Not Good"
         return "Bad"
 
-    def rank_cars(self, n=10):
-        """Score and rank cars."""
-        self.data["score"] = self.data.apply(self.score_car, axis=1)
-        self.data["score"] = self.data["score"].round(1)
-
-        # Apply the grade function
-        self.data["grade"] = self.data["score"].apply(self.assign_grade)
+    def _score_and_rank_data(self, data, n=10):
+        """Helper method to score, grade, and rank car data."""
+        data = data.copy()
+        data["score"] = data.apply(self.score_car, axis=1)
+        data["score"] = data["score"].round(1)
+        data["grade"] = data["score"].apply(self.assign_grade)
 
         # Sort cars by score
-        sorted_data = self.data.sort_values(by="score", ascending=False)
+        sorted_data = data.sort_values(by="score", ascending=False)
 
         # Get unique make-model combinations first
         unique_cars = sorted_data.drop_duplicates(subset=["make", "model"])
-        if len(unique_cars) >= n:
-            return unique_cars.head(n)
+        return unique_cars.head(n)
 
-        # Fill remaining spots with duplicates if necessary
-        remaining_cars = sorted_data[~sorted_data.index.isin(unique_cars.index)]
-        final_selection = pd.concat(
-            [unique_cars, remaining_cars.head(n - len(unique_cars))], ignore_index=True
-        )
+    def rank_cars(self, n=10, save=True):
+        """Score and rank cars. Optionally save top cars to /data/best/ folder."""
+        top_cars = self._score_and_rank_data(self.data, n)
 
-        return final_selection
+        if save:
+            save_best_cars(top_cars)
+
+        return top_cars
+
+    def get_all_time_best(self, n=10):
+        """Return the all-time best cars using existing scores only."""
+        if not os.path.exists(BEST_CARS_FILE):
+            raise FileNotFoundError("No best cars file found.")
+        all_best = pd.read_csv(BEST_CARS_FILE)
+        # Only use the existing score column, do not recalculate
+        if "score" not in all_best.columns:
+            raise ValueError("No score column found in best cars file.")
+        all_best = all_best.copy()
+        all_best["score"] = all_best["score"].round(1)
+        sorted_data = all_best.sort_values(by="score", ascending=False)
+        unique_cars = sorted_data.drop_duplicates(subset=["make", "model"])
+        return unique_cars.head(n)

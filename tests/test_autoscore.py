@@ -106,7 +106,7 @@ def test_rank_cars(mock_listdir, mock_read_csv, mock_data):
     """Test the ranking function."""
     autoscore = create_autoscore(mock_listdir, mock_read_csv, mock_data)
 
-    ranked_cars = autoscore.rank_cars(n=2)  # Get top 2 cars
+    ranked_cars = autoscore.rank_cars(n=2, save=False)  # Get top 2 cars
 
     assert ranked_cars.shape[0] == 2, "There should be 2 ranked cars"
     assert (
@@ -124,7 +124,7 @@ def test_rank_unique_cars(mock_listdir, mock_read_csv, mock_data):
     duplicate_data = pd.concat([mock_data, mock_data], ignore_index=True)
     autoscore.data = duplicate_data
 
-    ranked_cars = autoscore.rank_cars(n=3)  # Get top 3 cars
+    ranked_cars = autoscore.rank_cars(n=3, save=False)  # Get top 3 cars
 
     # Ensure that only unique cars by make and model are considered
     assert (
