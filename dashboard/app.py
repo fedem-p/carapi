@@ -116,7 +116,7 @@ def all_time_bests():
         bests = autoscorer.get_all_time_best(n=20)
         html = get_table_html(bests)
         return html
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         return f"<p>Error: {e}</p>"
 
 

@@ -20,7 +20,9 @@ def save_best_cars(top_cars, max_rows=300, best_cars_file=None):
         existing = pd.read_csv(best_cars_file)
         combined = pd.concat([existing, top_cars], ignore_index=True)
         # Remove duplicates by url, keep best score
-        combined["score"] = combined.apply(lambda row: row["score"] if "score" in row else 0, axis=1)
+        combined["score"] = combined.apply(
+            lambda row: row["score"] if "score" in row else 0, axis=1
+        )
         combined = combined.sort_values(by="score", ascending=False)
         combined = combined.drop_duplicates(subset=["url"], keep="first")
         combined = combined.head(max_rows)
@@ -185,26 +187,25 @@ class AutoScore:  # pylint: disable=too-many-instance-attributes
         data["score"] = data.apply(self.score_car, axis=1)
         data["score"] = data["score"].round(1)
         data["grade"] = data["score"].apply(self.assign_grade)
-        
+
         # Sort cars by score
         sorted_data = data.sort_values(by="score", ascending=False)
-        
+
         # Get unique make-model combinations first
         unique_cars = sorted_data.drop_duplicates(subset=["make", "model"])
         return unique_cars.head(n)
 
-
     def rank_cars(self, n=10, save=True):
         """Score and rank cars. Optionally save top cars to /data/best/ folder."""
         top_cars = self._score_and_rank_data(self.data, n)
-        
+
         if save:
             save_best_cars(top_cars)
-        
+
         return top_cars
 
     def get_all_time_best(self, n=10):
-        """Return the all-time best cars from the /data/best/best_cars.csv file, using existing scores only."""
+        """Return the all-time best cars using existing scores only."""
         if not os.path.exists(BEST_CARS_FILE):
             raise FileNotFoundError("No best cars file found.")
         all_best = pd.read_csv(BEST_CARS_FILE)
@@ -216,4 +217,3 @@ class AutoScore:  # pylint: disable=too-many-instance-attributes
         sorted_data = all_best.sort_values(by="score", ascending=False)
         unique_cars = sorted_data.drop_duplicates(subset=["make", "model"])
         return unique_cars.head(n)
-  
