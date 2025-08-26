@@ -108,6 +108,18 @@ def results():
     return html
 
 
+@app.route("/all-time-bests")
+def all_time_bests():
+    """Return the HTML table of all-time best cars."""
+    try:
+        autoscorer = AutoScore("data/results")
+        bests = autoscorer.get_all_time_best(n=20)
+        html = get_table_html(bests)
+        return html
+    except Exception as e:
+        return f"<p>Error: {e}</p>"
+
+
 @app.route("/config", methods=["GET"])
 def get_config():
     """Return the current configuration for the dashboard."""

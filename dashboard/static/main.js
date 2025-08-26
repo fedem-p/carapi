@@ -1,4 +1,52 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // --- Tab logic for Results and All Time Bests ---
+    const tabResultsBtn = document.getElementById('tab-results');
+    const tabAllTimeBestsBtn = document.getElementById('tab-all-time-bests');
+    const tabContentResults = document.getElementById('tab-content-results');
+    const tabContentAllTimeBests = document.getElementById('tab-content-all-time-bests');
+    
+    function switchTab(activeBtn, inactiveBtn, activeContent, inactiveContent) {
+        // Update button states
+        activeBtn.classList.add('active');
+        inactiveBtn.classList.remove('active');
+        
+        // Hide inactive content first
+        inactiveContent.style.display = 'none';
+        
+        // Show active content with animation
+        activeContent.style.display = 'block';
+        // Trigger reflow to ensure animation plays
+        activeContent.offsetHeight;
+    }
+    
+    if (tabResultsBtn && tabAllTimeBestsBtn && tabContentResults && tabContentAllTimeBests) {
+        tabResultsBtn.addEventListener('click', function() {
+            switchTab(tabResultsBtn, tabAllTimeBestsBtn, tabContentResults, tabContentAllTimeBests);
+        });
+        
+        tabAllTimeBestsBtn.addEventListener('click', function() {
+            switchTab(tabAllTimeBestsBtn, tabResultsBtn, tabContentAllTimeBests, tabContentResults);
+        });
+    }
+
+    // --- Load All Time Bests button logic ---
+    const loadAllTimeBestsBtn = document.getElementById('load-all-time-bests');
+    const allTimeBestsTableDiv = document.getElementById('all-time-bests-table');
+    if (loadAllTimeBestsBtn && allTimeBestsTableDiv) {
+        loadAllTimeBestsBtn.addEventListener('click', function() {
+            allTimeBestsTableDiv.innerHTML = '<p>Loading...</p>';
+            fetch('/all-time-bests')
+                .then(res => res.text())
+                .then(html => {
+                    allTimeBestsTableDiv.innerHTML = html;
+                })
+                .catch(() => {
+                    allTimeBestsTableDiv.innerHTML = '<p>Error loading all-time bests.</p>';
+                });
+        });
+    }
+
+    // --- Main dashboard logic ---
     const startBtn = document.getElementById('start-btn');
     const progressBar = document.getElementById('progress-bar');
     const progressDetails = document.getElementById('progress-details');

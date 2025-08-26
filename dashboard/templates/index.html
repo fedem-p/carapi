@@ -10,14 +10,36 @@
     <div class="dashboard-layout">
         <div class="container">
             <h1>Car Scraper Dashboard</h1>
-            <button id="start-btn">Start Scraping</button>
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                <button id="start-btn" class="button">Start Scraping</button>
+                <button id="load-all-time-bests" class="button">All Time Bests</button>
+                <button id="send-email-btn" class="button" disabled>Send Email</button>
+            </div>
             <div id="progress-container">
                 <div id="progress-bar"></div>
                 <span id="progress-details"></span>
             </div>
-            <button id="send-email-btn" class="button" disabled>Send Email</button>
-            <div id="results">
-                <p>No results yet.</p>
+            
+            <!-- Tab Navigation -->
+            <div class="tabs">
+                <button class="tab-button active" id="tab-results">
+                    <span>📊</span> Results
+                </button>
+                <button class="tab-button" id="tab-all-time-bests">
+                    <span>🏆</span> All Time Bests
+                </button>
+            </div>
+            
+            <!-- Tab Content -->
+            <div id="tab-content-results" class="tab-content" style="display:block;">
+                <div id="results">
+                    <p>No results yet.</p>
+                </div>
+            </div>
+            <div id="tab-content-all-time-bests" class="tab-content" style="display:none;">
+                <div id="all-time-bests-table">
+                    <p>No all-time bests yet.</p>
+                </div>
             </div>
         </div>
         <div id="settings-panel" class="side-panel">
