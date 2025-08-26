@@ -191,15 +191,8 @@ class AutoScore:  # pylint: disable=too-many-instance-attributes
         
         # Get unique make-model combinations first
         unique_cars = sorted_data.drop_duplicates(subset=["make", "model"])
-        if len(unique_cars) >= n:
-            return unique_cars.head(n)
-        else:
-            # Fill remaining spots with duplicates if necessary
-            remaining_cars = sorted_data[~sorted_data.index.isin(unique_cars.index)]
-            return pd.concat(
-                [unique_cars, remaining_cars.head(n - len(unique_cars))],
-                ignore_index=True,
-            )
+        return unique_cars.head(n)
+
 
     def rank_cars(self, n=10, save=True):
         """Score and rank cars. Optionally save top cars to /data/best/ folder."""
