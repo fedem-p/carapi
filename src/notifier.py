@@ -1,8 +1,6 @@
 """Handles sending notifications via email, including formatting and sending car listings."""
 
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import mailtrap as mt  # type: ignore
 import pandas as pd
 from src.table_utils import get_table_html
 
@@ -31,37 +29,35 @@ class Notifier:  # pylint: disable=too-few-public-methods
             cars_df = pd.DataFrame(cars_df)
         if cars_df.empty:
             print("No cars to send.")
-            return
+            return  # No cars to send
 
         # Generate HTML table for the car listings
         table_html = get_table_html(cars_df)
+        mail = mt.Mail(
+            sender=mt.Address(email=self.config.email_settings["sender"]),
+            to=[mt.Address(email=self.config.email_settings["recipient"])],
+            subject=subject,
+            html=table_html,
+            category="Car Listings",
+        )
 
-        # Create email message
-        msg = MIMEMultipart()
-        msg["From"] = self.config.email_settings["username"]
-        msg["To"] = self.config.email_settings["recipient"]
-        msg["Subject"] = subject
+        # Check email size before sending
+        email_str = mail.html if hasattr(mail, "html") else str(mail)
+        email_size = len(email_str.encode("utf-8"))
+        print(f"Email size: {email_size} bytes")
+        if email_size > 10_000_000:
+            raise ValueError("Email size exceeds 10MB. Email not sent.")
 
-        # Attach table as email body in HTML format
-        msg.attach(MIMEText(table_html, "html"))
-
-        # Send email
-        print("Sending email...")
+        print("Creating Mailtrap client...")
         try:
-            with smtplib.SMTP(
-                self.config.email_settings["smtp_server"],
-                self.config.email_settings["smtp_port"],
-            ) as smtp:
-                smtp.starttls()
-                smtp.login(
-                    self.config.email_settings["username"],
-                    self.config.email_settings["password"],
-                )
-                smtp.sendmail(
-                    self.config.email_settings["username"],
-                    self.config.email_settings["recipient"],
-                    msg.as_string(),
-                )
-            print("Email sent successfully.")
-        except smtplib.SMTPException as e:
-            print(f"Failed to send email: {e}")
+            client = mt.MailtrapClient(token=self.config.email_settings["api_key"])
+        except Exception as e:  # pylint: disable=broad-except
+            print(f"Failed to create Mailtrap client: {type(e).__name__}: {e}")
+            raise
+
+        print("Sending email via Mailtrap...")
+        try:
+            response = client.send(mail)
+            print(f"Mailtrap response: {response}")
+        except Exception as e:  # pylint: disable=broad-except
+            print(f"Failed to send email via Mailtrap: {type(e).__name__}: {e}")
