@@ -141,7 +141,9 @@ def set_config():
     data = request.get_json()
     config = Config()
     if "filters" in data:
-        config.filters = config.set_filters_from_frontend(data["filters"])
+        new_filters = config.set_filters_from_frontend(data["filters"])
+        # Only update keys present in new_filters, preserve others
+        config.filters.update(new_filters)
     if "num_pages" in data:
         config.num_pages = data["num_pages"]
     if "scoring_profiles" in data:
