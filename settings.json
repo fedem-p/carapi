@@ -25,7 +25,7 @@
     ],
     "sort": "standard"
   },
-  "num_pages": 1,
+  "num_pages": 20,
   "scoring_profiles": {
     "standard": {
       "favorite_models": [
