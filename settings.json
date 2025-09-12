@@ -20,7 +20,7 @@
     ],
     "sort": "standard"
   },
-  "num_pages": 20,
+  "num_pages": 1,
   "scoring_profiles": {
     "standard": {
       "favorite_models": [
