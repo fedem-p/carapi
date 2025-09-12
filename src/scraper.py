@@ -169,7 +169,7 @@ class Scraper:
             # New method: use article id to build car announcement URL
             car_id = car.get("id")
             if not car_id:
-                raise ScraperException("Could not find car id for announcement.")
+                raise ScraperException("Could not find car ID for listing.")
             full_url = f"https://www.autoscout24.com/offers/{car_id}"
             car_make = car.get("data-make", "").strip()
             car_model = car.get("data-model", "").strip()
