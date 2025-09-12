@@ -4,6 +4,9 @@ import mailtrap as mt  # type: ignore
 import pandas as pd
 from src.table_utils import get_table_html
 
+EMAIL_SIZE_MB = 1_000_000
+MAX_EMAIL_SIZE = 10 * EMAIL_SIZE_MB  # 10MB
+
 
 class Notifier:  # pylint: disable=too-few-public-methods
     """Handles sending notifications via email."""
@@ -42,10 +45,9 @@ class Notifier:  # pylint: disable=too-few-public-methods
         )
 
         # Check email size before sending
-        email_str = mail.html if hasattr(mail, "html") else str(mail)
-        email_size = len(email_str.encode("utf-8"))
-        print(f"Email size: {email_size} bytes")
-        if email_size > 10_000_000:
+        email_size = len(table_html.encode("utf-8"))
+        print(f"Email size: {email_size / EMAIL_SIZE_MB:.2f} MB")
+        if email_size > MAX_EMAIL_SIZE:
             raise ValueError("Email size exceeds 10MB. Email not sent.")
 
         print("Creating Mailtrap client...")
@@ -57,7 +59,6 @@ class Notifier:  # pylint: disable=too-few-public-methods
 
         print("Sending email via Mailtrap...")
         try:
-            response = client.send(mail)
-            print(f"Mailtrap response: {response}")
+            client.send(mail)
         except Exception as e:  # pylint: disable=broad-except
             print(f"Failed to send email via Mailtrap: {type(e).__name__}: {e}")
