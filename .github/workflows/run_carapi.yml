@@ -3,17 +3,15 @@ name: 🚗 Run Program Manually 🏁
 on:
   workflow_dispatch:
   schedule:
-  - cron: "0 0 */4 * *"  # Runs every 4 days at midnight UTC
+  - cron: "0 0 */7 * *"  # Runs every 7 days at midnight UTC
 
 jobs:
   run_program:
     name: 🚀 Run the Program
     runs-on: ubuntu-latest
     env:
-      SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
-      SMTP_PORT: ${{ secrets.SMTP_PORT }}
-      EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
-      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+      EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+      API_KEY: ${{ secrets.API_KEY }}
       EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
     steps:
       - name: 📥 Checkout repository
@@ -22,7 +20,7 @@ jobs:
       - name: 🛠️ Set up Python and Poetry
         uses: actions/setup-python@v4
         with:
-          python-version: "3.12"  # Adjust to your desired Python version
+          python-version: "3.12"
 
       - name: Install dependencies with Poetry
         run: |
@@ -30,4 +28,4 @@ jobs:
           poetry install
 
       - name: 🚀 Run the program using Poetry
-        run: poetry run python -m src.main
+        run: poetry run python -m src.main --email
