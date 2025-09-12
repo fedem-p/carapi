@@ -444,6 +444,20 @@ MarkupSafe = ">=2.0"
 i18n = ["Babel (>=2.7)"]
 
 [[package]]
+name = "mailtrap"
+version = "2.1.0"
+description = "Official mailtrap.io API client"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "mailtrap-2.1.0-py3-none-any.whl", hash = "sha256:6cef8dc02734e3e3a16161e38d184ea6971e925673c731c8ac968b88556f069e"},
+    {file = "mailtrap-2.1.0.tar.gz", hash = "sha256:22fccf3cd912a7e47d4a1bb86865cf0f0587d59dc73bc78d9e77d596767f5b85"},
+]
+
+[package.dependencies]
+requests = ">=2.26.0"
+
+[[package]]
 name = "markupsafe"
 version = "3.0.2"
 description = "Safely add untrusted strings to HTML/XML markup."
@@ -1151,4 +1165,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "881a7ec56b239cc1f622bed522d72b108e02fb0e0ccca81a42c72493b058e713"
+content-hash = "f8edc0a3e04c3a3223410f568a808e6e89594a2b3105897f7f071b978665af67"
