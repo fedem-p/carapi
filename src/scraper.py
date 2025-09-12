@@ -166,8 +166,11 @@ class Scraper:
     def _extract_car_details(self, car):
         """Helper method to extract car details from a single listing."""
         try:
-            url = car.find("a", class_="ListItem_title__ndA4s")["href"]
-            full_url = f"https://www.autoscout24.com{url}"
+            # New method: use article id to build car announcement URL
+            car_id = car.get("id")
+            if not car_id:
+                raise ScraperException("Could not find car id for announcement.")
+            full_url = f"https://www.autoscout24.com/offers/{car_id}"
             car_make = car.get("data-make", "").strip()
             car_model = car.get("data-model", "").strip()
             car_price = self._parse_price(car.get("data-price"))
@@ -201,7 +204,13 @@ class Scraper:
                 )
                 return car_data
 
-        except (AttributeError, ValueError, IndexError, ScraperException) as e:
+        except (
+            AttributeError,
+            ValueError,
+            IndexError,
+            ScraperException,
+            TypeError,
+        ) as e:
             logger.error("Error extracting data for a car: %s", e)
 
         return None
