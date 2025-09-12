@@ -10,7 +10,7 @@
     "min_year": "2020",
     "kmto": "100000",
     "min_power": "86",
-    "max_price": "23000",
+    "max_price": "20000",
     "min_seats": "4",
     "fuel": [
       "2",
@@ -18,9 +18,14 @@
       "B",
       "D"
     ],
+    "emclass": "5",
+    "ensticker": "4",
+    "eq": [
+      "37"
+    ],
     "sort": "standard"
   },
-  "num_pages": 20,
+  "num_pages": 1,
   "scoring_profiles": {
     "standard": {
       "favorite_models": [

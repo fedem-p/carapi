@@ -143,9 +143,10 @@ class AutoScore:  # pylint: disable=too-many-instance-attributes
             score += self.weights["emissions"] * 0.8
 
         # Coolness Factor
-        if (car["make"].lower(), car["model"].lower()) in self.favorite_models or (
-            car["make"].lower() in [make for make, _ in self.favorite_models]
-            and car["model"].lower() == "x"
+        make = str(car["make"]).lower()
+        model = str(car["model"]).lower()
+        if (make, model) in self.favorite_models or (
+            make in [m for m, _ in self.favorite_models] and model == "x"
         ):
             score += self.weights["coolness_factor"]
 

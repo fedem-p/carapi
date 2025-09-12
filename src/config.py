@@ -58,11 +58,9 @@ class Config:
     scoring_profiles: Dict[str, Dict[str, Any]] = field(default_factory=dict)
     excluded_cars: Dict[str, list] = field(default_factory=dict)
     email_settings = {
-        "smtp_server": os.getenv("SMTP_SERVER"),
-        "smtp_port": int(os.getenv("SMTP_PORT", "587")),
-        "username": os.getenv("EMAIL_USERNAME"),
-        "password": os.getenv("EMAIL_PASSWORD"),
+        "sender": os.getenv("EMAIL_SENDER"),
         "recipient": os.getenv("EMAIL_RECIPIENT"),
+        "api_key": os.getenv("API_KEY"),
     }
 
     def __post_init__(self):

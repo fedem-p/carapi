@@ -86,7 +86,7 @@ def test_parse_cars_from_html():
         cars = scraper._parse_cars_from_html(html)
     assert isinstance(cars, list)
     # At least one car should be found in a real sample
-    assert len(cars) == 17
+    assert len(cars) == 18
     # Check that expected keys exist in the first car dict
     assert "make" in cars[0]
     assert "model" in cars[0]
