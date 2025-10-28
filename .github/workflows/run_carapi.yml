@@ -29,3 +29,75 @@ jobs:
 
       - name: 🚀 Run the program using Poetry
         run: poetry run python -m src.main --email
+
+  run_program_hybrid:
+    name: 🚀 Run Hybrid Profile
+    runs-on: ubuntu-latest
+    env:
+      EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+      API_KEY: ${{ secrets.API_KEY }}
+      EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Set up Python and Poetry
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies with Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          poetry install
+
+      - name: 🚀 Run Hybrid Profile
+        run: poetry run python -m src.main --email --settings settings_hybrid.json
+
+  run_program_suv:
+    name: 🚀 Run SUV Profile
+    runs-on: ubuntu-latest
+    env:
+      EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+      API_KEY: ${{ secrets.API_KEY }}
+      EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Set up Python and Poetry
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies with Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          poetry install
+
+      - name: 🚀 Run SUV Profile
+        run: poetry run python -m src.main --email --settings settings_suv.json
+
+  run_program_no_suv:
+    name: 🚀 Run No SUV Profile
+    runs-on: ubuntu-latest
+    env:
+      EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+      API_KEY: ${{ secrets.API_KEY }}
+      EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Set up Python and Poetry
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies with Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          poetry install
+
+      - name: 🚀 Run No SUV Profile
+        run: poetry run python -m src.main --email --settings settings_no_suv.json

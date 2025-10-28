@@ -1,7 +1,7 @@
 """Configuration settings for the scraper and email notifications."""
 
 from dataclasses import dataclass, field
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 import os
 import json
 from dotenv import (  # type: ignore[import-not-found] # pylint: disable=import-error
@@ -14,9 +14,15 @@ load_dotenv()
 SETTINGS_PATH = os.path.join(os.path.dirname(__file__), "..", "settings.json")
 
 
-def load_settings():
-    """Load settings from the settings.json file."""
-    with open(SETTINGS_PATH, "r", encoding="utf-8") as f:
+def load_settings(settings_path=None):
+    """Load settings from the specified settings file."""
+    if settings_path is None:
+        settings_path = SETTINGS_PATH
+    elif not os.path.isabs(settings_path):
+        # If relative path, make it relative to the project root
+        settings_path = os.path.join(os.path.dirname(__file__), "..", settings_path)
+
+    with open(settings_path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -52,6 +58,7 @@ SORT_LABELS_REV = {v: k for k, v in SORT_LABELS.items()}
 class Config:
     """Class for managing configuration settings for the scraper and email notifications."""
 
+    settings_path: Optional[str] = field(default=None)
     base_url: str = "https://www.autoscout24.com/lst"  # Default URL set to .de
     filters: Dict[str, Any] = field(default_factory=dict)
     num_pages: int = 10
@@ -65,7 +72,7 @@ class Config:
 
     def __post_init__(self):
         """Load settings from file and initialize config attributes."""
-        settings = load_settings()
+        settings = load_settings(self.settings_path)
         self.filters = settings.get("filters", {})
         self.num_pages = settings.get("num_pages", 10)
         self.scoring_profiles = settings.get("scoring_profiles", {})

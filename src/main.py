@@ -24,6 +24,11 @@ def main():
     parser.add_argument(
         "--email", action="store_true", help="Send email notification with top cars"
     )
+    parser.add_argument(
+        "--settings",
+        type=str,
+        help="Path to settings JSON file (default: settings.json)",
+    )
     args = parser.parse_args()
 
     # Check environment variable as well as flag
@@ -33,7 +38,7 @@ def main():
     print(f"Send email notifications: {send_email}")
 
     # Load configuration
-    config = Config()
+    config = Config(settings_path=args.settings)
 
     # Scrape data
     scraper = Scraper(config)
