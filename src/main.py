@@ -25,7 +25,9 @@ def main():
         "--email", action="store_true", help="Send email notification with top cars"
     )
     parser.add_argument(
-        "--settings", type=str, help="Path to settings JSON file (default: settings.json)"
+        "--settings",
+        type=str,
+        help="Path to settings JSON file (default: settings.json)",
     )
     args = parser.parse_args()
 

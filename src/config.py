@@ -1,7 +1,7 @@
 """Configuration settings for the scraper and email notifications."""
 
 from dataclasses import dataclass, field
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 import os
 import json
 from dotenv import (  # type: ignore[import-not-found] # pylint: disable=import-error
@@ -21,7 +21,7 @@ def load_settings(settings_path=None):
     elif not os.path.isabs(settings_path):
         # If relative path, make it relative to the project root
         settings_path = os.path.join(os.path.dirname(__file__), "..", settings_path)
-    
+
     with open(settings_path, "r", encoding="utf-8") as f:
         return json.load(f)
 
@@ -58,7 +58,7 @@ SORT_LABELS_REV = {v: k for k, v in SORT_LABELS.items()}
 class Config:
     """Class for managing configuration settings for the scraper and email notifications."""
 
-    settings_path: str = field(default=None)
+    settings_path: Optional[str] = field(default=None)
     base_url: str = "https://www.autoscout24.com/lst"  # Default URL set to .de
     filters: Dict[str, Any] = field(default_factory=dict)
     num_pages: int = 10
