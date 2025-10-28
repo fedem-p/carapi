@@ -1,18 +1,20 @@
 {
   "filters": {
     "body": [
-      "4"
+      "2",
+      "3",
+      "4",
+      "5",
+      "6"
     ],
     "min_year": "2020",
     "kmto": "100000",
     "min_power": "86",
-    "max_price": "20000",
+    "max_price": "22000",
     "min_seats": "4",
     "fuel": [
       "2",
-      "3",
-      "B",
-      "D"
+      "3"
     ],
     "emclass": "5",
     "ensticker": "4",
