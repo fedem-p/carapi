@@ -10,7 +10,7 @@
     "min_year": "2020",
     "kmto": "100000",
     "min_power": "86",
-    "max_price": "22000",
+    "max_price": "20000",
     "min_seats": "4",
     "fuel": [
       "2",
@@ -109,7 +109,7 @@
         ],
         [
           "volkswagen",
-          "golf gti"
+          "golf gte"
         ],
         [
           "honda",
@@ -130,6 +130,14 @@
         [
           "hyundai",
           "i30"
+        ],
+        [
+          "suzuki",
+          "vitara"
+        ],
+        [
+          "suzuki",
+          "scross"
         ]
       ],
       "fuel_scores": {
@@ -157,9 +165,6 @@
     }
   },
   "excluded_cars": {
-    "bmw": [
-      "118"
-    ],
     "citroen": [
       "c3"
     ],

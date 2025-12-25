@@ -1,12 +1,16 @@
 {
   "filters": {
     "body": [
-      "4"
+      "2",
+      "3",
+      "4",
+      "5",
+      "6"
     ],
     "min_year": "2020",
     "kmto": "100000",
     "min_power": "86",
-    "max_price": "22000",
+    "max_price": "20000",
     "min_seats": "4",
     "fuel": [
       "2",
@@ -108,12 +112,40 @@
         [
           "volkswagen",
           "golf gti"
+        ],
+        [
+          "honda",
+          "civic"
+        ],
+        [
+          "honda",
+          "hr-v"
+        ],
+        [
+          "opel",
+          "insignia"
+        ],
+        [
+          "renault",
+          "arkana"
+        ],
+        [
+          "hyundai",
+          "i30"
+        ],
+        [
+          "suzuki",
+          "vitara"
+        ],
+        [
+          "suzuki",
+          "scross"
         ]
       ],
       "fuel_scores": {
         "diesel": 0.8,
         "electric/diesel": 1,
-        "electric/gasoline": 0.9,
+        "electric/gasoline": 1,
         "gasoline": 0.7,
         "regular/benzine 91": 0.7,
         "super 95": 0.7
@@ -135,9 +167,6 @@
     }
   },
   "excluded_cars": {
-    "bmw": [
-      "118"
-    ],
     "citroen": [
       "c3"
     ],
