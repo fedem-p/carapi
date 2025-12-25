@@ -199,6 +199,7 @@ class TestEndToEndWorkflow:
         """Test integration of main function workflow."""
         # Setup mocks for realistic workflow
         mock_config = MagicMock()
+        mock_config.settings_path = "/expected/path"
         mock_config_class.return_value = mock_config
 
         # Mock scraper returns different data for different sort methods
@@ -270,7 +271,7 @@ class TestEndToEndWorkflow:
         # 5. Email notification sent
         mock_notifier_class.assert_called_once_with(mock_config)
         mock_notifier.send_email.assert_called_once_with(
-            "Latest Car Listings", mock_ranked_cars
+            "Latest Car Listings: /expected/path", mock_ranked_cars
         )
 
     def test_configuration_integration(self):

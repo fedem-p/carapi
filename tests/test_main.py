@@ -98,6 +98,7 @@ def test_main_with_email_flag(
     """Test main function with email flag enabled."""
     # Setup mocks
     mock_config = MagicMock()
+    mock_config.settings_path = "/expected/path"
     mock_config_class.return_value = mock_config
 
     mock_scraper = MagicMock()
@@ -139,7 +140,7 @@ def test_main_with_email_flag(
     # Verify email functionality
     mock_notifier_class.assert_called_once_with(mock_config)
     mock_notifier.send_email.assert_called_once_with(
-        "Latest Car Listings", mock_ranked_cars
+        "Latest Car Listings: /expected/path", mock_ranked_cars
     )
 
     # Verify send email message is printed
@@ -163,6 +164,7 @@ def test_main_with_email_env_var(
     """Test main function with email environment variable enabled."""
     # Setup mocks
     mock_config = MagicMock()
+    mock_config.settings_path = "/expected/path"
     mock_config_class.return_value = mock_config
 
     mock_scraper = MagicMock()
@@ -204,7 +206,7 @@ def test_main_with_email_env_var(
     # Verify email functionality
     mock_notifier_class.assert_called_once_with(mock_config)
     mock_notifier.send_email.assert_called_once_with(
-        "Latest Car Listings", mock_ranked_cars
+        "Latest Car Listings: /expected/path", mock_ranked_cars
     )
 
     # Verify send email message is printed

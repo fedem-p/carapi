@@ -65,7 +65,7 @@ def main():
     # Send email with the top cars if --email flag or SEND_EMAIL env is set
     if send_email:
         notifier = Notifier(config)
-        notifier.send_email("Latest Car Listings", ranked_cars)
+        notifier.send_email(f"Latest Car Listings: {config.settings_path}", ranked_cars)
 
 
 if __name__ == "__main__":
