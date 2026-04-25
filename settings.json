@@ -35,11 +35,7 @@
         ],
         [
           "skoda",
-          "octavia"
-        ],
-        [
-          "skoda",
-          "kamiq"
+          "kodiaq"
         ],
         [
           "audi",
@@ -58,24 +54,8 @@
           "x"
         ],
         [
-          "ford",
-          "explorer"
-        ],
-        [
-          "jaguar",
-          "x"
-        ],
-        [
           "lexus",
           "x"
-        ],
-        [
-          "maserati",
-          "x"
-        ],
-        [
-          "mazda",
-          "6"
         ],
         [
           "mercedes-benz",
@@ -107,11 +87,7 @@
         ],
         [
           "volkswagen",
-          "tiguan"
-        ],
-        [
-          "volkswagen",
-          "golf gti"
+          "golf gte"
         ],
         [
           "honda",
@@ -119,27 +95,31 @@
         ],
         [
           "honda",
-          "hr-v"
+          "HR-V"
+        ],
+        [
+          "peugeot",
+          "3008"
         ],
         [
           "opel",
           "insignia"
         ],
         [
+          "opel",
+          "astra"
+        ],
+        [
+          "peugeot",
+          "408"
+        ],
+        [
           "renault",
           "arkana"
         ],
         [
-          "hyundai",
-          "i30"
-        ],
-        [
           "suzuki",
           "vitara"
-        ],
-        [
-          "suzuki",
-          "scross"
         ]
       ],
       "fuel_scores": {
@@ -192,7 +172,6 @@
       "juke"
     ],
     "opel": [
-      "astra",
       "corsa",
       "grandland x",
       "grandland",
@@ -201,8 +180,7 @@
       "mokka"
     ],
     "peugeot": [
-      "208",
-      "308"
+      "208"
     ],
     "renault": [
       "zoe",
