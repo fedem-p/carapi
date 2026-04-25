@@ -22,9 +22,7 @@
     "min_seats": "4",
     "fuel": [
       "2",
-      "3",
-      "B",
-      "D"
+      "3"
     ],
     "emclass": "5",
     "ensticker": "4",
