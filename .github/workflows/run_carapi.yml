@@ -77,3 +77,27 @@ jobs:
 
       - name: 🚀 Run Reliable Profile
         run: poetry run python -m src.main --email --settings settings_reliable.json
+
+  run_program_all_fuel:
+    name: 🚀 Run All Fuel Profile
+    runs-on: ubuntu-latest
+    env:
+      EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+      API_KEY: ${{ secrets.API_KEY }}
+      EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Set up Python and Poetry
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies with Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          poetry install
+
+      - name: 🚀 Run All Fuel Profile
+        run: poetry run python -m src.main --email --settings settings_subset_all_fuel.json
