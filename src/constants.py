@@ -24,6 +24,7 @@ FILTER_MAKES = [
     "Jeep",
     "Suzuki",
     "Hyundai",
+    "Honda",
     "Maserati",
     "Toyota",
     "BMW",

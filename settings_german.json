@@ -7,10 +7,18 @@
       "5",
       "6"
     ],
-    "min_year": "2020",
-    "kmto": "100000",
+    "brands": [
+      "bmw",
+      "audi",
+      "renault",
+      "volkswagen",
+      "ford",
+      "kia"
+    ],
+    "min_year": "2021",
+    "kmto": "80000",
     "min_power": "86",
-    "max_price": "20000",
+    "max_price": "22000",
     "min_seats": "4",
     "fuel": [
       "2",
@@ -35,11 +43,7 @@
         ],
         [
           "skoda",
-          "octavia"
-        ],
-        [
-          "skoda",
-          "kamiq"
+          "kodiaq"
         ],
         [
           "audi",
@@ -58,24 +62,8 @@
           "x"
         ],
         [
-          "ford",
-          "explorer"
-        ],
-        [
-          "jaguar",
-          "x"
-        ],
-        [
           "lexus",
           "x"
-        ],
-        [
-          "maserati",
-          "x"
-        ],
-        [
-          "mazda",
-          "6"
         ],
         [
           "mercedes-benz",
@@ -107,11 +95,7 @@
         ],
         [
           "volkswagen",
-          "tiguan"
-        ],
-        [
-          "volkswagen",
-          "golf gti"
+          "golf gte"
         ],
         [
           "honda",
@@ -119,27 +103,31 @@
         ],
         [
           "honda",
-          "hr-v"
+          "HR-V"
+        ],
+        [
+          "peugeot",
+          "3008"
         ],
         [
           "opel",
           "insignia"
         ],
         [
+          "opel",
+          "astra"
+        ],
+        [
+          "peugeot",
+          "408"
+        ],
+        [
           "renault",
           "arkana"
         ],
         [
-          "hyundai",
-          "i30"
-        ],
-        [
           "suzuki",
           "vitara"
-        ],
-        [
-          "suzuki",
-          "scross"
         ]
       ],
       "fuel_scores": {
@@ -192,7 +180,6 @@
       "juke"
     ],
     "opel": [
-      "astra",
       "corsa",
       "grandland x",
       "grandland",
@@ -201,8 +188,7 @@
       "mokka"
     ],
     "peugeot": [
-      "208",
-      "308"
+      "208"
     ],
     "renault": [
       "zoe",
